@@ -5,109 +5,103 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Estoque QR">
 <title>Estoque QR</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
-    --bg: #f5f5f3; --surface: #ffffff; --border: rgba(0,0,0,0.1); --border-med: rgba(0,0,0,0.18);
-    --text: #1a1a18; --text-secondary: #6b6b68; --text-tertiary: #9b9b97;
-    --green: #0f6e56; --green-bg: #e1f5ee; --green-border: rgba(15,110,86,0.25);
-    --red: #993c1d; --red-bg: #faece7; --red-border: rgba(153,60,29,0.25);
+    --bg: #f5f5f3; --surface: #fff; --border: rgba(0,0,0,0.1); --border-med: rgba(0,0,0,0.18);
+    --text: #1a1a18; --text2: #6b6b68; --text3: #9b9b97;
+    --green: #0f6e56; --green-bg: #e1f5ee; --green-b: rgba(15,110,86,0.25);
+    --red: #993c1d; --red-bg: #faece7; --red-b: rgba(153,60,29,0.25);
     --blue: #185fa5; --blue-bg: #e6f1fb;
-    --amber-bg: #faeeda; --amber: #854f0b; --radius: 14px; --radius-sm: 9px;
+    --amber-bg: #faeeda; --amber: #854f0b;
+    --r: 14px; --rs: 9px;
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --bg: #1a1a18; --surface: #242422; --border: rgba(255,255,255,0.1); --border-med: rgba(255,255,255,0.18);
-      --text: #f0f0ec; --text-secondary: #9b9b97; --text-tertiary: #6b6b68;
-      --green: #5dcaa5; --green-bg: #04342c; --green-border: rgba(93,202,165,0.25);
-      --red: #f0997b; --red-bg: #4a1b0c; --red-border: rgba(240,153,123,0.25);
-      --blue: #85b7eb; --blue-bg: #042c53;
-      --amber-bg: #412402; --amber: #ef9f27;
+      --bg:#1a1a18; --surface:#242422; --border:rgba(255,255,255,0.1); --border-med:rgba(255,255,255,0.18);
+      --text:#f0f0ec; --text2:#9b9b97; --text3:#6b6b68;
+      --green:#5dcaa5; --green-bg:#04342c; --green-b:rgba(93,202,165,0.25);
+      --red:#f0997b; --red-bg:#4a1b0c; --red-b:rgba(240,153,123,0.25);
+      --blue:#85b7eb; --blue-bg:#042c53;
+      --amber-bg:#412402; --amber:#ef9f27;
     }
   }
-  html, body { height: 100%; overflow: hidden; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); display: flex; flex-direction: column; height: 100dvh; }
+  html,body{height:100%;overflow:hidden;}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column;height:100dvh;}
+  .topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;padding-top:max(12px,env(safe-area-inset-top));background:var(--surface);border-bottom:0.5px solid var(--border);flex-shrink:0;}
+  .topbar-title{font-size:17px;font-weight:600;}
+  .topbar-sub{font-size:11px;color:var(--text2);margin-top:1px;}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--text3);}
+  .dot.ok{background:var(--green);}
+  .tabs{display:flex;background:var(--surface);border-bottom:0.5px solid var(--border);flex-shrink:0;}
+  .tab{flex:1;padding:11px 0;font-size:13px;font-weight:500;color:var(--text2);background:none;border:none;cursor:pointer;border-bottom:2px solid transparent;}
+  .tab.on{color:var(--text);border-bottom-color:var(--text);}
+  .pages{flex:1;overflow:hidden;position:relative;}
+  .page{position:absolute;inset:0;overflow-y:auto;padding:14px;display:none;padding-bottom:max(14px,env(safe-area-inset-bottom));}
+  .page.on{display:block;}
 
-  .topbar { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; padding-top: max(12px, env(safe-area-inset-top)); background: var(--surface); border-bottom: 0.5px solid var(--border); flex-shrink: 0; }
-  .topbar-title { font-size: 17px; font-weight: 600; letter-spacing: -0.3px; }
-  .topbar-sub { font-size: 11px; color: var(--text-secondary); margin-top: 1px; }
-  .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-tertiary); flex-shrink: 0; }
-  .status-dot.ok { background: var(--green); }
+  /* camera */
+  .cambox{position:relative;width:100%;aspect-ratio:1;background:#000;border-radius:var(--r);overflow:hidden;margin-bottom:10px;}
+  #vid{width:100%;height:100%;object-fit:cover;display:block;}
+  .overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;}
+  .frame{width:62%;aspect-ratio:1;border:2.5px solid rgba(255,255,255,0.6);border-radius:10px;position:relative;transition:border-color .15s,box-shadow .15s;}
+  .frame.hit{border-color:#4ade80;box-shadow:0 0 0 3px rgba(74,222,128,.35);}
+  .corner{position:absolute;width:22px;height:22px;}
+  .tl{top:-2px;left:-2px;border-top:3px solid #fff;border-left:3px solid #fff;border-radius:4px 0 0 0;}
+  .tr{top:-2px;right:-2px;border-top:3px solid #fff;border-right:3px solid #fff;border-radius:0 4px 0 0;}
+  .bl{bottom:-2px;left:-2px;border-bottom:3px solid #fff;border-left:3px solid #fff;border-radius:0 0 0 4px;}
+  .br{bottom:-2px;right:-2px;border-bottom:3px solid #fff;border-right:3px solid #fff;border-radius:0 0 4px 0;}
+  .sline{position:absolute;left:4%;right:4%;height:2px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.85),transparent);animation:sl 2s ease-in-out infinite;}
+  @keyframes sl{0%,100%{top:6%}50%{top:90%}}
+  .idle{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;color:rgba(255,255,255,.65);font-size:13px;gap:8px;}
 
-  .tabs { display: flex; background: var(--surface); border-bottom: 0.5px solid var(--border); flex-shrink: 0; }
-  .tab { flex: 1; padding: 11px 0; font-size: 13px; font-weight: 500; color: var(--text-secondary); background: none; border: none; cursor: pointer; border-bottom: 2px solid transparent; }
-  .tab.active { color: var(--text); border-bottom-color: var(--text); }
+  .zoom-row{display:none;align-items:center;gap:10px;margin-bottom:8px;}
+  .zoom-row.on{display:flex;}
+  .zoom-row label{font-size:12px;color:var(--text2);white-space:nowrap;}
+  .zoom-row input{flex:1;}
+  .zv{font-size:12px;color:var(--text2);min-width:28px;text-align:right;}
 
-  .pages { flex: 1; overflow: hidden; position: relative; }
-  .page { position: absolute; inset: 0; overflow-y: auto; padding: 16px; display: none; padding-bottom: max(16px, env(safe-area-inset-bottom)); }
-  .page.active { display: block; }
+  .toast{background:var(--green-bg);border:0.5px solid var(--green-b);border-radius:var(--rs);padding:11px 14px;margin-bottom:10px;display:none;align-items:center;gap:10px;}
+  .toast.on{display:flex;}
+  .toast.err{background:var(--red-bg);border-color:var(--red-b);}
+  .ti{font-size:20px;flex-shrink:0;}
+  .tcode{font-size:14px;font-weight:600;color:var(--green);word-break:break-all;flex:1;}
+  .toast.err .tcode{color:var(--red);}
+  .tlbl{font-size:11px;color:var(--text2);margin-bottom:2px;}
 
-  .cam-wrap { position: relative; width: 100%; aspect-ratio: 1; background: #000; border-radius: var(--radius); overflow: hidden; margin-bottom: 10px; }
-  #qr-video { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .cam-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; }
-  .cam-frame { width: 65%; aspect-ratio: 1; border-radius: 12px; position: relative; transition: box-shadow 0.2s, border-color 0.2s; border: 2px solid rgba(255,255,255,0.5); }
-  .cam-frame.detected { border-color: #4ade80; box-shadow: 0 0 0 3px rgba(74,222,128,0.4); }
-  .cam-corner { position: absolute; width: 24px; height: 24px; }
-  .cam-corner.tl { top:-2px; left:-2px; border-top:3px solid #fff; border-left:3px solid #fff; border-radius:5px 0 0 0; }
-  .cam-corner.tr { top:-2px; right:-2px; border-top:3px solid #fff; border-right:3px solid #fff; border-radius:0 5px 0 0; }
-  .cam-corner.bl { bottom:-2px; left:-2px; border-bottom:3px solid #fff; border-left:3px solid #fff; border-radius:0 0 0 5px; }
-  .cam-corner.br { bottom:-2px; right:-2px; border-bottom:3px solid #fff; border-right:3px solid #fff; border-radius:0 0 5px 0; }
-  .scan-line { position: absolute; left:4%; right:4%; height:2px; background: linear-gradient(90deg,transparent,rgba(255,255,255,0.9),transparent); animation: scanline 1.8s ease-in-out infinite; }
-  @keyframes scanline { 0%,100%{top:8%} 50%{top:88%} }
-  .cam-idle { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; color:rgba(255,255,255,0.7); font-size:13px; gap:8px; }
+  .cnts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+  .cnt{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--rs);padding:12px;text-align:center;}
+  .cnum{font-size:26px;font-weight:700;letter-spacing:-1px;}
+  .clbl{font-size:11px;color:var(--text2);margin-top:2px;}
 
-  .hint-box { background: var(--blue-bg); border-radius: var(--radius-sm); padding: 10px 12px; margin-bottom: 10px; font-size: 12px; color: var(--blue); line-height: 1.5; display: none; }
-  .hint-box.show { display: block; }
+  .btn{width:100%;padding:14px;border-radius:var(--rs);font-size:15px;font-weight:600;cursor:pointer;border:0.5px solid var(--border-med);background:var(--surface);color:var(--text);margin-bottom:8px;display:flex;align-items:center;justify-content:center;gap:8px;transition:transform .1s;}
+  .btn:active{transform:scale(.97);}
+  .pri{background:var(--text);color:var(--bg);border-color:transparent;}
+  .dng{background:var(--red-bg);color:var(--red);border-color:var(--red-b);}
 
-  .result-toast { background: var(--green-bg); border: 0.5px solid var(--green-border); border-radius: var(--radius-sm); padding: 12px 14px; margin-bottom: 10px; display: none; align-items: center; gap: 10px; }
-  .result-toast.show { display: flex; }
-  .result-toast.err { background: var(--red-bg); border-color: var(--red-border); }
-  .toast-code { font-size: 14px; font-weight: 600; color: var(--green); word-break: break-all; flex: 1; }
-  .result-toast.err .toast-code { color: var(--red); }
-  .toast-label { font-size: 11px; color: var(--text-secondary); margin-bottom: 2px; }
+  .card{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:14px;}
+  .ctitle{font-size:15px;font-weight:600;margin-bottom:12px;}
+  .flbl{font-size:12px;color:var(--text2);margin-bottom:5px;font-weight:500;}
+  input[type=url]{width:100%;padding:12px 14px;border-radius:var(--rs);border:0.5px solid var(--border-med);background:var(--bg);color:var(--text);font-size:14px;margin-bottom:14px;-webkit-appearance:none;}
+  .srow{display:flex;gap:10px;margin-bottom:12px;align-items:flex-start;}
+  .sbadge{width:22px;height:22px;border-radius:50%;background:var(--blue-bg);color:var(--blue);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+  .stxt{font-size:13px;color:var(--text2);line-height:1.55;}
+  .stxt strong{color:var(--text);font-weight:600;}
+  .cblk{background:var(--bg);border-radius:var(--rs);border:0.5px solid var(--border);padding:12px;font-family:'Menlo','Courier New',monospace;font-size:11px;line-height:1.6;white-space:pre-wrap;word-break:break-all;margin-bottom:8px;}
+  .mok{font-size:13px;color:var(--green);margin-top:8px;display:none;font-weight:500;}
+  .mok.on{display:block;}
 
-  .counters { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-  .counter-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius-sm); padding: 12px; text-align: center; }
-  .counter-num { font-size: 28px; font-weight: 700; letter-spacing: -1px; }
-  .counter-lbl { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
-
-  .btn { width:100%; padding:14px; border-radius:var(--radius-sm); font-size:15px; font-weight:600; cursor:pointer; border:0.5px solid var(--border-med); background:var(--surface); color:var(--text); margin-bottom:8px; display:flex; align-items:center; justify-content:center; gap:8px; transition: transform 0.1s; }
-  .btn:active { transform: scale(0.97); }
-  .btn-primary { background:var(--text); color:var(--bg); border-color:transparent; }
-  .btn-danger { background:var(--red-bg); color:var(--red); border-color:var(--red-border); }
-
-  .card { background:var(--surface); border:0.5px solid var(--border); border-radius:var(--radius); padding:16px; margin-bottom:14px; }
-  .card-title { font-size:15px; font-weight:600; margin-bottom:12px; }
-  .field-label { font-size:12px; color:var(--text-secondary); margin-bottom:5px; font-weight:500; }
-  input[type=url] { width:100%; padding:12px 14px; border-radius:var(--radius-sm); border:0.5px solid var(--border-med); background:var(--bg); color:var(--text); font-size:14px; margin-bottom:14px; -webkit-appearance:none; }
-  .step-row { display:flex; gap:10px; margin-bottom:12px; align-items:flex-start; }
-  .step-badge { width:22px; height:22px; border-radius:50%; background:var(--blue-bg); color:var(--blue); font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px; }
-  .step-text { font-size:13px; color:var(--text-secondary); line-height:1.55; }
-  .step-text strong { color:var(--text); font-weight:600; }
-  .code-block { background:var(--bg); border-radius:var(--radius-sm); border:0.5px solid var(--border); padding:12px; font-family:'Menlo','Courier New',monospace; font-size:11px; color:var(--text); line-height:1.6; white-space:pre-wrap; word-break:break-all; margin-bottom:8px; }
-  .msg-ok { font-size:13px; color:var(--green); margin-top:8px; display:none; font-weight:500; }
-  .msg-ok.show { display:block; }
-
-  .log-item { display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:0.5px solid var(--border); font-size:13px; }
-  .log-item:last-child { border-bottom:none; }
-  .log-code { flex:1; color:var(--text); font-weight:500; word-break:break-all; }
-  .log-time { font-size:11px; color:var(--text-tertiary); flex-shrink:0; }
-  .badge { font-size:11px; font-weight:600; padding:3px 9px; border-radius:99px; flex-shrink:0; }
-  .badge-ok { background:var(--green-bg); color:var(--green); }
-  .badge-err { background:var(--red-bg); color:var(--red); }
-  .badge-local { background:var(--amber-bg); color:var(--amber); }
-  .empty { text-align:center; padding:40px 20px; color:var(--text-tertiary); font-size:14px; }
-
-  .zoom-row { display:flex; align-items:center; gap:10px; margin-bottom:10px; display:none; }
-  .zoom-row.show { display:flex; }
-  .zoom-row label { font-size:12px; color:var(--text-secondary); white-space:nowrap; }
-  .zoom-row input { flex:1; }
-  .zoom-val { font-size:12px; color:var(--text-secondary); min-width:28px; text-align:right; }
-
-  #loading-lib { text-align:center; padding:20px; font-size:13px; color:var(--text-secondary); }
+  .li{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:0.5px solid var(--border);font-size:13px;}
+  .li:last-child{border-bottom:none;}
+  .lcode{flex:1;font-weight:500;word-break:break-all;}
+  .lt{font-size:11px;color:var(--text3);flex-shrink:0;}
+  .badge{font-size:11px;font-weight:600;padding:3px 9px;border-radius:99px;flex-shrink:0;}
+  .bok{background:var(--green-bg);color:var(--green);}
+  .berr{background:var(--red-bg);color:var(--red);}
+  .bloc{background:var(--amber-bg);color:var(--amber);}
+  .empty{text-align:center;padding:36px 20px;color:var(--text3);font-size:14px;}
 </style>
 </head>
 <body>
@@ -115,291 +109,294 @@
 <div class="topbar">
   <div>
     <div class="topbar-title">Estoque QR</div>
-    <div class="topbar-sub" id="topbar-sub">Planilha não configurada</div>
+    <div class="topbar-sub" id="tsub">Planilha não configurada</div>
   </div>
-  <div class="status-dot" id="status-dot"></div>
+  <div class="dot" id="tdot"></div>
 </div>
 
 <div class="tabs">
-  <button class="tab active" onclick="showTab('scanner')">📷 Scanner</button>
-  <button class="tab" onclick="showTab('config')">⚙️ Configurar</button>
-  <button class="tab" onclick="showTab('log')">📋 Histórico</button>
+  <button class="tab on" onclick="showTab('s')">📷 Scanner</button>
+  <button class="tab" onclick="showTab('c')">⚙️ Configurar</button>
+  <button class="tab" onclick="showTab('l')">📋 Histórico</button>
 </div>
 
 <div class="pages">
 
-  <div class="page active" id="page-scanner">
-    <div id="loading-lib">⏳ Carregando leitor...</div>
-
-    <div id="scanner-ui" style="display:none;">
-      <div class="cam-wrap">
-        <video id="qr-video" autoplay playsinline muted></video>
-        <div class="cam-idle" id="cam-idle">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5">
-            <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
-            <rect x="3" y="14" width="7" height="7" rx="1"/>
-            <path d="M14 14h2v2h-2zM18 14h3v3h-3zM14 18h3v3h-3zM19 19h2v2h-2z"/>
-          </svg>
-          Toque em iniciar câmera
-        </div>
-        <div class="cam-overlay" id="cam-overlay" style="display:none;">
-          <div class="cam-frame" id="cam-frame">
-            <div class="cam-corner tl"></div><div class="cam-corner tr"></div>
-            <div class="cam-corner bl"></div><div class="cam-corner br"></div>
-            <div class="scan-line"></div>
-          </div>
+  <div class="page on" id="ps">
+    <div class="cambox">
+      <video id="vid" autoplay playsinline muted></video>
+      <div class="idle" id="idle">
+        <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5">
+          <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+          <rect x="3" y="14" width="7" height="7" rx="1"/>
+          <path d="M14 14h2v2h-2zM18 14h3v3h-3zM14 18h3v3h-3zM19 19h2v2h-2z"/>
+        </svg>
+        Toque em iniciar câmera
+      </div>
+      <div class="overlay" id="ov" style="display:none">
+        <div class="frame" id="fr">
+          <div class="corner tl"></div><div class="corner tr"></div>
+          <div class="corner bl"></div><div class="corner br"></div>
+          <div class="sline"></div>
         </div>
       </div>
-
-      <div class="zoom-row" id="zoom-row">
-        <label>🔍</label>
-        <input type="range" id="zoom-slider" min="1" max="5" step="0.1" value="1" oninput="applyZoom(this.value)">
-        <span class="zoom-val" id="zoom-val">1×</span>
-      </div>
-
-      <div class="hint-box" id="hint-box">
-        💡 Dica: centralize o QR Code no quadro e mantenha a 10–15 cm de distância. Use o zoom se necessário.
-      </div>
-
-      <div class="result-toast" id="result-toast">
-        <div id="toast-icon" style="font-size:20px;flex-shrink:0;">✓</div>
-        <div>
-          <div class="toast-label" id="toast-label">Código enviado</div>
-          <div class="toast-code" id="toast-code">—</div>
-        </div>
-      </div>
-
-      <div class="counters">
-        <div class="counter-card"><div class="counter-num" id="cnt-total">0</div><div class="counter-lbl">leituras</div></div>
-        <div class="counter-card"><div class="counter-num" id="cnt-ok">0</div><div class="counter-lbl">enviados</div></div>
-      </div>
-
-      <button class="btn btn-primary" id="btn-scan" onclick="toggleScan()">
-        <span id="btn-icon">📷</span> <span id="btn-txt">Iniciar câmera</span>
-      </button>
-      <button class="btn btn-danger" onclick="clearAll()">🗑 Limpar histórico</button>
     </div>
+
+    <div class="zoom-row" id="zr">
+      <label>🔍 Zoom</label>
+      <input type="range" id="zs" min="1" max="5" step="0.1" value="1" oninput="doZoom(this.value)">
+      <span class="zv" id="zv">1×</span>
+    </div>
+
+    <div class="toast" id="toast">
+      <div class="ti" id="ti">✓</div>
+      <div><div class="tlbl" id="tlbl">Código enviado</div><div class="tcode" id="tc">—</div></div>
+    </div>
+
+    <div class="cnts">
+      <div class="cnt"><div class="cnum" id="ctot">0</div><div class="clbl">leituras</div></div>
+      <div class="cnt"><div class="cnum" id="cok">0</div><div class="clbl">enviados</div></div>
+    </div>
+
+    <button class="btn pri" id="btnc" onclick="toggle()">
+      <span id="bico">📷</span><span id="btxt">Iniciar câmera</span>
+    </button>
+    <button class="btn dng" onclick="clearAll()">🗑 Limpar histórico</button>
   </div>
 
-  <div class="page" id="page-config">
+  <div class="page" id="pc">
     <div class="card">
-      <div class="card-title">Conectar ao Google Sheets</div>
-      <div class="step-row"><div class="step-badge">1</div><div class="step-text">No Google Sheets, vá em <strong>Extensões → Apps Script</strong></div></div>
-      <div class="step-row"><div class="step-badge">2</div><div class="step-text">Adicione a função abaixo no final do <strong>Código.gs</strong></div></div>
-      <div class="code-block" id="script-block">function doPost(e) {
+      <div class="ctitle">Conectar ao Google Sheets</div>
+      <div class="srow"><div class="sbadge">1</div><div class="stxt">No Google Sheets, vá em <strong>Extensões → Apps Script</strong></div></div>
+      <div class="srow"><div class="sbadge">2</div><div class="stxt">Adicione a função abaixo no final do <strong>Código.gs</strong></div></div>
+      <div class="cblk" id="scr">function doPost(e) {
   const sheet = SpreadsheetApp
     .getActiveSpreadsheet()
     .getActiveSheet();
   const data = JSON.parse(e.postData.contents);
-  const valores = sheet.getRange("A:A").getValues();
-  let linha = 2;
-  for (let i = 1; i < valores.length; i++) {
-    if (valores[i][0] === "") { linha = i+1; break; }
+  const vals = sheet.getRange("A:A").getValues();
+  let row = 2;
+  for (let i = 1; i < vals.length; i++) {
+    if (vals[i][0] === "") { row = i+1; break; }
   }
-  sheet.getRange(linha, 1).setValue(data.code);
+  sheet.getRange(row, 1).setValue(data.code);
   return ContentService.createTextResponse("ok");
 }</div>
-      <button class="btn" style="margin-bottom:14px;" onclick="copyScript(this)">📋 Copiar script</button>
-      <div class="step-row"><div class="step-badge">3</div><div class="step-text"><strong>Implantar → Novo deploy</strong> como Web App, acesso: <strong>Qualquer pessoa</strong></div></div>
-      <div class="step-row"><div class="step-badge">4</div><div class="step-text">Cole a URL gerada abaixo</div></div>
-      <div class="field-label">URL do Web App</div>
-      <input type="url" id="inp-url" placeholder="https://script.google.com/macros/s/...">
-      <button class="btn btn-primary" onclick="saveConfig()">💾 Salvar configuração</button>
-      <div class="msg-ok" id="msg-ok">✓ Configuração salva!</div>
+      <button class="btn" style="margin-bottom:14px" onclick="cpScript(this)">📋 Copiar script</button>
+      <div class="srow"><div class="sbadge">3</div><div class="stxt"><strong>Implantar → Novo deploy</strong> como Web App, acesso: <strong>Qualquer pessoa</strong></div></div>
+      <div class="srow"><div class="sbadge">4</div><div class="stxt">Cole a URL gerada abaixo</div></div>
+      <div class="flbl">URL do Web App</div>
+      <input type="url" id="iurl" placeholder="https://script.google.com/macros/s/...">
+      <button class="btn pri" onclick="saveConf()">💾 Salvar configuração</button>
+      <div class="mok" id="mok">✓ Configuração salva!</div>
     </div>
   </div>
 
-  <div class="page" id="page-log">
+  <div class="page" id="pl">
     <div class="card">
-      <div class="card-title">Leituras da sessão</div>
-      <div id="log-list"><div class="empty">📭<br>Nenhuma leitura ainda</div></div>
+      <div class="ctitle">Leituras da sessão</div>
+      <div id="llist"><div class="empty">📭<br>Nenhuma leitura ainda</div></div>
     </div>
   </div>
 </div>
 
-<!-- ZXing — very robust QR/barcode reader used in professional scanners -->
-<script src="https://unpkg.com/@zxing/library@0.19.1/umd/index.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsqr/1.4.0/jsQR.min.js"></script>
 <script>
-let codeReader = null;
-let scanning = false;
-let videoTrack = null;
-let log = [], cntTotal = 0, cntOk = 0;
-const COOLDOWN = 2500;
-let lastCode = '', lastTime = 0;
+/* ── state ── */
+let active=false, stream=null, raf=null, vtrack=null;
+let log=[], tot=0, sent=0, lastCode='', lastT=0;
+const COOL=2500;
+const cv=document.createElement('canvas'), cx=cv.getContext('2d');
 
-function showTab(t) {
-  ['scanner','config','log'].forEach((id,i) => {
-    document.getElementById('page-'+id).classList.toggle('active', id===t);
-    document.querySelectorAll('.tab')[i].classList.toggle('active', id===t);
+/* ── tabs ── */
+function showTab(t){
+  ['s','c','l'].forEach((id,i)=>{
+    document.getElementById('p'+id).classList.toggle('on',id===t);
+    document.querySelectorAll('.tab')[i].classList.toggle('on',id===t);
   });
-  if (t==='log') renderLog();
+  if(t==='l') renderLog();
 }
 
-function getUrl() { return localStorage.getItem('qr_url') || ''; }
-
-function updateTopbar() {
-  const ok = !!getUrl();
-  document.getElementById('status-dot').classList.toggle('ok', ok);
-  document.getElementById('topbar-sub').textContent = ok ? 'Planilha conectada' : 'Planilha não configurada';
+/* ── config ── */
+const gurl=()=>localStorage.getItem('qr_url')||'';
+function upTop(){
+  const ok=!!gurl();
+  document.getElementById('tdot').classList.toggle('ok',ok);
+  document.getElementById('tsub').textContent=ok?'Planilha conectada':'Planilha não configurada';
+}
+function saveConf(){
+  localStorage.setItem('qr_url',document.getElementById('iurl').value.trim());
+  const m=document.getElementById('mok'); m.classList.add('on');
+  setTimeout(()=>m.classList.remove('on'),2500); upTop();
+}
+function cpScript(btn){
+  navigator.clipboard.writeText(document.getElementById('scr').textContent).catch(()=>{});
+  btn.textContent='✓ Copiado!';
+  setTimeout(()=>btn.textContent='📋 Copiar script',2000);
 }
 
-function saveConfig() {
-  localStorage.setItem('qr_url', document.getElementById('inp-url').value.trim());
-  const m = document.getElementById('msg-ok');
-  m.classList.add('show');
-  setTimeout(() => m.classList.remove('show'), 2500);
-  updateTopbar();
+/* ── zoom ── */
+function doZoom(v){
+  document.getElementById('zv').textContent=parseFloat(v).toFixed(1)+'×';
+  if(!vtrack) return;
+  try{
+    const c=vtrack.getCapabilities();
+    if(c&&c.zoom){
+      const z=c.zoom.min+(c.zoom.max-c.zoom.min)*((v-1)/4);
+      vtrack.applyConstraints({advanced:[{zoom:z}]});
+    }
+  }catch(e){}
 }
 
-function copyScript(btn) {
-  navigator.clipboard.writeText(document.getElementById('script-block').textContent).catch(()=>{});
-  btn.textContent = '✓ Copiado!';
-  setTimeout(() => btn.textContent = '📋 Copiar script', 2000);
-}
+/* ── camera ── */
+async function toggle(){
+  if(active){stop();return;}
+  const btn=document.getElementById('btnc');
+  btn.disabled=true;
+  document.getElementById('btxt').textContent='Abrindo...';
+  try{
+    // Request camera — use environment facing, decent resolution
+    stream=await navigator.mediaDevices.getUserMedia({
+      video:{facingMode:{exact:'environment'},width:{ideal:1280},height:{ideal:1280}},
+      audio:false
+    }).catch(()=>navigator.mediaDevices.getUserMedia({
+      video:{facingMode:'environment',width:{ideal:1280},height:{ideal:1280}},
+      audio:false
+    }));
 
-function applyZoom(val) {
-  document.getElementById('zoom-val').textContent = parseFloat(val).toFixed(1) + '×';
-  if (!videoTrack) return;
-  const caps = videoTrack.getCapabilities();
-  if (caps && caps.zoom) {
-    const z = caps.zoom.min + (caps.zoom.max - caps.zoom.min) * ((val - 1) / 4);
-    videoTrack.applyConstraints({ advanced: [{ zoom: z }] }).catch(()=>{});
+    vtrack=stream.getVideoTracks()[0];
+
+    // autofocus + check zoom
+    try{
+      const caps=vtrack.getCapabilities();
+      const adv={};
+      if(caps.focusMode?.includes('continuous')) adv.focusMode='continuous';
+      if(Object.keys(adv).length) await vtrack.applyConstraints({advanced:[adv]});
+      if(caps.zoom) document.getElementById('zr').classList.add('on');
+    }catch(e){}
+
+    const vid=document.getElementById('vid');
+    vid.srcObject=stream;
+    await vid.play();
+
+    document.getElementById('idle').style.display='none';
+    document.getElementById('ov').style.display='flex';
+    active=true;
+    document.getElementById('bico').textContent='⏹';
+    document.getElementById('btxt').textContent='Parar câmera';
+    btn.className='btn'; btn.disabled=false;
+    tick();
+  }catch(err){
+    btn.disabled=false;
+    document.getElementById('btxt').textContent='Câmera negada — libere nas configurações';
+    document.getElementById('bico').textContent='❌';
+    btn.className='btn dng';
   }
 }
 
-async function toggleScan() {
-  if (scanning) { stopScan(); return; }
-  const btn = document.getElementById('btn-scan');
-  btn.disabled = true;
-  document.getElementById('btn-txt').textContent = 'Iniciando...';
+function stop(){
+  active=false;
+  cancelAnimationFrame(raf);
+  if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;}
+  vtrack=null;
+  const vid=document.getElementById('vid'); vid.srcObject=null;
+  document.getElementById('idle').style.display='flex';
+  document.getElementById('ov').style.display='none';
+  document.getElementById('zr').classList.remove('on');
+  document.getElementById('bico').textContent='📷';
+  document.getElementById('btxt').textContent='Iniciar câmera';
+  document.getElementById('btnc').className='btn pri';
+}
 
-  try {
-    // Get camera stream with high resolution
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: 'environment', width: { ideal: 1920 }, height: { ideal: 1920 } },
-      audio: false
-    });
+/* ── scan loop — multiple strategies ── */
+function tick(){
+  if(!active){return;}
+  const vid=document.getElementById('vid');
+  if(vid.readyState===vid.HAVE_ENOUGH_DATA){
+    const W=vid.videoWidth, H=vid.videoHeight;
+    cv.width=W; cv.height=H;
+    cx.drawImage(vid,0,0);
 
-    videoTrack = stream.getVideoTracks()[0];
+    let qr=null;
 
-    // Enable continuous autofocus
-    try {
-      const caps = videoTrack.getCapabilities();
-      const adv = {};
-      if (caps.focusMode && caps.focusMode.includes('continuous')) adv.focusMode = 'continuous';
-      if (caps.zoom) document.getElementById('zoom-row').classList.add('show');
-      if (Object.keys(adv).length) await videoTrack.applyConstraints({ advanced: [adv] });
-    } catch(e) {}
+    // Strategy 1: full frame
+    if(!qr) qr=jsQR(cx.getImageData(0,0,W,H).data,W,H,{inversionAttempts:'attemptBoth'});
 
-    const video = document.getElementById('qr-video');
-    video.srcObject = stream;
-    await video.play();
+    // Strategy 2: center 70%
+    if(!qr){
+      const ox=Math.floor(W*.15),oy=Math.floor(H*.15),cw=Math.floor(W*.7),ch=Math.floor(H*.7);
+      qr=jsQR(cx.getImageData(ox,oy,cw,ch).data,cw,ch,{inversionAttempts:'attemptBoth'});
+    }
 
-    document.getElementById('cam-idle').style.display = 'none';
-    document.getElementById('cam-overlay').style.display = 'flex';
-    document.getElementById('hint-box').classList.add('show');
-    scanning = true;
+    // Strategy 3: enhanced contrast — draw with high contrast filter then re-read
+    if(!qr){
+      cx.filter='contrast(2) brightness(1.1)';
+      cx.drawImage(vid,0,0);
+      cx.filter='none';
+      qr=jsQR(cx.getImageData(0,0,W,H).data,W,H,{inversionAttempts:'attemptBoth'});
+    }
 
-    document.getElementById('btn-icon').textContent = '⏹';
-    document.getElementById('btn-txt').textContent = 'Parar câmera';
-    btn.className = 'btn';
-    btn.disabled = false;
-
-    // Use ZXing to decode from video element continuously
-    codeReader = new ZXing.BrowserMultiFormatReader();
-    codeReader.decodeFromVideoElement(video, (result, err) => {
-      if (result) {
-        const now = Date.now();
-        const code = result.getText();
-        if (code !== lastCode || now - lastTime > COOLDOWN) {
-          lastCode = code; lastTime = now;
-          document.getElementById('cam-frame').classList.add('detected');
-          setTimeout(() => document.getElementById('cam-frame').classList.remove('detected'), 500);
-          onCode(code);
-        }
+    const fr=document.getElementById('fr');
+    if(qr){
+      fr.classList.add('hit');
+      const now=Date.now();
+      if(qr.data!==lastCode||now-lastT>COOL){
+        lastCode=qr.data; lastT=now;
+        onCode(qr.data);
       }
-    });
-
-  } catch(err) {
-    btn.disabled = false;
-    document.getElementById('btn-txt').textContent = 'Câmera negada — libere nas configurações';
-    document.getElementById('btn-icon').textContent = '❌';
-    btn.className = 'btn btn-danger';
+    } else {
+      fr.classList.remove('hit');
+    }
   }
+  raf=requestAnimationFrame(tick);
 }
 
-function stopScan() {
-  scanning = false;
-  if (codeReader) { codeReader.reset(); codeReader = null; }
-  if (videoTrack) { videoTrack.stop(); videoTrack = null; }
-  const video = document.getElementById('qr-video');
-  if (video.srcObject) { video.srcObject.getTracks().forEach(t=>t.stop()); video.srcObject = null; }
-  document.getElementById('cam-idle').style.display = 'flex';
-  document.getElementById('cam-overlay').style.display = 'none';
-  document.getElementById('hint-box').classList.remove('show');
-  document.getElementById('zoom-row').classList.remove('show');
-  document.getElementById('btn-icon').textContent = '📷';
-  document.getElementById('btn-txt').textContent = 'Iniciar câmera';
-  document.getElementById('btn-scan').className = 'btn btn-primary';
-}
+/* ── on code found ── */
+async function onCode(code){
+  tot++; document.getElementById('ctot').textContent=tot;
+  if(navigator.vibrate) navigator.vibrate(80);
 
-async function onCode(code) {
-  cntTotal++;
-  document.getElementById('cnt-total').textContent = cntTotal;
-  if (navigator.vibrate) navigator.vibrate(100);
-
-  const url = getUrl();
-  let ok = false;
-  if (url) {
-    try {
-      await fetch(url, { method:'POST', body: JSON.stringify({ code, ts: new Date().toISOString() }), headers: { 'Content-Type': 'application/json' } });
-      ok = true; cntOk++;
-      document.getElementById('cnt-ok').textContent = cntOk;
-    } catch(e) {}
+  const url=gurl(); let ok=false;
+  if(url){
+    try{
+      await fetch(url,{method:'POST',body:JSON.stringify({code,ts:new Date().toISOString()}),headers:{'Content-Type':'application/json'}});
+      ok=true; sent++; document.getElementById('cok').textContent=sent;
+    }catch(e){}
   }
 
-  const toast = document.getElementById('result-toast');
-  toast.className = 'result-toast show' + (url && !ok ? ' err' : '');
-  document.getElementById('toast-icon').textContent = ok ? '✓' : (url ? '✗' : '📋');
-  document.getElementById('toast-label').textContent = ok ? 'Enviado para a planilha ✓' : (url ? 'Erro ao enviar' : 'Lido (planilha não configurada)');
-  document.getElementById('toast-code').textContent = code;
-
-  log.unshift({ code, time: new Date(), ok, sent: !!url });
+  const t=document.getElementById('toast');
+  t.className='toast on'+(url&&!ok?' err':'');
+  document.getElementById('ti').textContent=ok?'✓':(url?'✗':'📋');
+  document.getElementById('tlbl').textContent=ok?'Enviado para a planilha':(url?'Erro ao enviar':'Lido (planilha não configurada)');
+  document.getElementById('tc').textContent=code;
+  log.unshift({code,time:new Date(),ok,s:!!url});
 }
 
-function renderLog() {
-  const el = document.getElementById('log-list');
-  if (!log.length) { el.innerHTML = '<div class="empty">📭<br>Nenhuma leitura ainda</div>'; return; }
-  el.innerHTML = log.map(i => `
-    <div class="log-item">
-      <div class="log-code">${i.code.length>32?i.code.substring(0,32)+'…':i.code}</div>
-      <div class="log-time">${i.time.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</div>
-      <span class="badge ${i.sent?(i.ok?'badge-ok':'badge-err'):'badge-local'}">${i.sent?(i.ok?'enviado':'erro'):'local'}</span>
+function renderLog(){
+  const el=document.getElementById('llist');
+  if(!log.length){el.innerHTML='<div class="empty">📭<br>Nenhuma leitura ainda</div>';return;}
+  el.innerHTML=log.map(i=>`
+    <div class="li">
+      <div class="lcode">${i.code.length>32?i.code.substring(0,32)+'…':i.code}</div>
+      <div class="lt">${i.time.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</div>
+      <span class="badge ${i.s?(i.ok?'bok':'berr'):'bloc'}">${i.s?(i.ok?'enviado':'erro'):'local'}</span>
     </div>`).join('');
 }
 
-function clearAll() {
-  if (!confirm('Limpar histórico?')) return;
-  log=[]; cntTotal=0; cntOk=0;
-  document.getElementById('cnt-total').textContent='0';
-  document.getElementById('cnt-ok').textContent='0';
-  document.getElementById('result-toast').className='result-toast';
+function clearAll(){
+  if(!confirm('Limpar histórico?'))return;
+  log=[];tot=0;sent=0;
+  document.getElementById('ctot').textContent='0';
+  document.getElementById('cok').textContent='0';
+  document.getElementById('toast').className='toast';
   renderLog();
 }
 
-// Wait for ZXing to load
-function waitForZXing() {
-  if (typeof ZXing !== 'undefined') {
-    document.getElementById('loading-lib').style.display = 'none';
-    document.getElementById('scanner-ui').style.display = 'block';
-    const url = getUrl();
-    if (url) document.getElementById('inp-url').value = url;
-    updateTopbar();
-  } else {
-    setTimeout(waitForZXing, 200);
-  }
-}
-waitForZXing();
+/* ── init ── */
+window.addEventListener('load',()=>{
+  const u=gurl(); if(u) document.getElementById('iurl').value=u;
+  upTop();
+});
 </script>
 </body>
 </html>
