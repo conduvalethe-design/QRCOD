@@ -26,20 +26,15 @@
   }}
   html,body{height:100%;overflow:hidden;}
   body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column;height:100dvh;}
-
   .topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;padding-top:max(12px,env(safe-area-inset-top));background:var(--surface);border-bottom:0.5px solid var(--border);flex-shrink:0;}
   .topbar-title{font-size:17px;font-weight:600;}
   .tsub{font-size:11px;color:var(--t2);margin-top:1px;}
-
   .tabs{display:flex;background:var(--surface);border-bottom:0.5px solid var(--border);flex-shrink:0;}
   .tab{flex:1;padding:11px 0;font-size:13px;font-weight:500;color:var(--t2);background:none;border:none;cursor:pointer;border-bottom:2px solid transparent;}
   .tab.on{color:var(--text);border-bottom-color:var(--text);}
-
   .pages{flex:1;overflow:hidden;position:relative;}
   .page{position:absolute;inset:0;overflow-y:auto;padding:14px;display:none;padding-bottom:max(14px,env(safe-area-inset-bottom));}
   .page.on{display:block;}
-
-  /* camera */
   .cambox{position:relative;width:100%;aspect-ratio:1;background:#000;border-radius:var(--r);overflow:hidden;margin-bottom:10px;}
   #vid{width:100%;height:100%;object-fit:cover;display:block;}
   .ov{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;}
@@ -53,19 +48,29 @@
   .sline{position:absolute;left:4%;right:4%;height:2px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.85),transparent);animation:sl 2s ease-in-out infinite;}
   @keyframes sl{0%,100%{top:6%}50%{top:90%}}
   .idle{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;color:rgba(255,255,255,.65);font-size:13px;gap:8px;}
-
-  /* last read flash */
+  .zrow{display:none;align-items:center;gap:10px;margin-bottom:10px;}
+  .zrow.on{display:flex;}
+  .zrow label{font-size:12px;color:var(--t2);white-space:nowrap;}
+  .zrow input{flex:1;}
+  .zv{font-size:12px;color:var(--t2);min-width:28px;text-align:right;}
   .flash{background:var(--gbg);border:0.5px solid var(--gb);border-radius:var(--rs);padding:10px 14px;margin-bottom:10px;display:none;align-items:center;gap:10px;}
   .flash.on{display:flex;}
   .flash-code{font-size:14px;font-weight:700;color:var(--green);flex:1;word-break:break-all;}
   .flash-lbl{font-size:11px;color:var(--t2);margin-bottom:2px;}
-
-  /* code list */
+  .counter-row{display:flex;gap:8px;margin-bottom:10px;}
+  .cnt{flex:1;background:var(--surface);border:0.5px solid var(--border);border-radius:var(--rs);padding:10px;text-align:center;}
+  .cnum{font-size:22px;font-weight:700;letter-spacing:-1px;}
+  .clbl{font-size:11px;color:var(--t2);margin-top:1px;}
+  .btn{width:100%;padding:13px;border-radius:var(--rs);font-size:14px;font-weight:600;cursor:pointer;border:0.5px solid var(--bmed);background:var(--surface);color:var(--text);margin-bottom:8px;display:flex;align-items:center;justify-content:center;gap:8px;transition:transform .1s;}
+  .btn:active{transform:scale(.97);}
+  .pri{background:var(--text);color:var(--bg);border-color:transparent;}
+  .dng{background:var(--rbg);color:var(--red);border-color:var(--rb);}
+  .info-box{background:var(--bbg);border-radius:var(--rs);padding:10px 12px;margin-bottom:10px;font-size:12px;color:var(--blue);line-height:1.5;display:none;}
+  .info-box.on{display:block;}
   .list-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
   .list-title{font-size:14px;font-weight:600;}
   .copy-all-btn{padding:7px 14px;border-radius:var(--rs);font-size:13px;font-weight:600;background:var(--text);color:var(--bg);border:none;cursor:pointer;}
   .copy-all-btn:active{opacity:.8;}
-
   .code-list{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:10px;}
   .code-item{display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:0.5px solid var(--border);}
   .code-item:last-child{border-bottom:none;}
@@ -73,58 +78,35 @@
   .code-val{flex:1;font-size:14px;font-weight:500;word-break:break-all;}
   .code-time{font-size:11px;color:var(--t3);flex-shrink:0;}
   .code-del{background:none;border:none;color:var(--t3);font-size:18px;cursor:pointer;padding:0 2px;flex-shrink:0;}
-  .code-del:active{color:var(--red);}
   .empty-list{padding:28px;text-align:center;color:var(--t3);font-size:13px;}
-
-  .counter-row{display:flex;gap:8px;margin-bottom:10px;}
-  .cnt{flex:1;background:var(--surface);border:0.5px solid var(--border);border-radius:var(--rs);padding:10px;text-align:center;}
-  .cnum{font-size:22px;font-weight:700;letter-spacing:-1px;}
-  .clbl{font-size:11px;color:var(--t2);margin-top:1px;}
-
-  .btn{width:100%;padding:13px;border-radius:var(--rs);font-size:14px;font-weight:600;cursor:pointer;border:0.5px solid var(--bmed);background:var(--surface);color:var(--text);margin-bottom:8px;display:flex;align-items:center;justify-content:center;gap:8px;transition:transform .1s;}
-  .btn:active{transform:scale(.97);}
-  .pri{background:var(--text);color:var(--bg);border-color:transparent;}
-  .dng{background:var(--rbg);color:var(--red);border-color:var(--rb);}
-
-  /* config */
   .card{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:14px;}
-  .ctitle{font-size:15px;font-weight:600;margin-bottom:12px;}
+  .ctitle{font-size:15px;font-weight:600;margin-bottom:10px;}
   .flbl{font-size:12px;color:var(--t2);margin-bottom:5px;font-weight:500;}
   input[type=url]{width:100%;padding:12px 14px;border-radius:var(--rs);border:0.5px solid var(--bmed);background:var(--bg);color:var(--text);font-size:14px;margin-bottom:14px;-webkit-appearance:none;}
-  .srow{display:flex;gap:10px;margin-bottom:12px;align-items:flex-start;}
+  .mok{font-size:13px;color:var(--green);margin-top:8px;display:none;font-weight:500;}
+  .mok.on{display:block;}
+  .srow{display:flex;gap:10px;margin-bottom:10px;align-items:flex-start;}
   .sbadge{width:22px;height:22px;border-radius:50%;background:var(--bbg);color:var(--blue);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
   .stxt{font-size:13px;color:var(--t2);line-height:1.55;}
   .stxt strong{color:var(--text);font-weight:600;}
   .cblk{background:var(--bg);border-radius:var(--rs);border:0.5px solid var(--border);padding:12px;font-family:'Menlo','Courier New',monospace;font-size:11px;line-height:1.6;white-space:pre-wrap;word-break:break-all;margin-bottom:8px;}
-  .mok{font-size:13px;color:var(--green);margin-top:8px;display:none;font-weight:500;}
-  .mok.on{display:block;}
-
-  .zrow{display:none;align-items:center;gap:10px;margin-bottom:10px;}
-  .zrow.on{display:flex;}
-  .zrow label{font-size:12px;color:var(--t2);white-space:nowrap;}
-  .zrow input{flex:1;}
-  .zv{font-size:12px;color:var(--t2);min-width:28px;text-align:right;}
 </style>
 </head>
 <body>
-
 <div class="topbar">
   <div>
     <div class="topbar-title">Estoque QR</div>
-    <div class="tsub" id="tsub">Toque para escanear</div>
+    <div class="tsub" id="tsub">Pronto para escanear</div>
   </div>
-  <span id="cnt-badge" style="font-size:13px;font-weight:600;color:var(--green);display:none;"></span>
+  <span id="badge" style="font-size:13px;font-weight:700;color:var(--green);"></span>
 </div>
-
 <div class="tabs">
   <button class="tab on" onclick="showTab('s')">📷 Scanner</button>
   <button class="tab" onclick="showTab('l')">📋 Lista (<span id="tab-count">0</span>)</button>
   <button class="tab" onclick="showTab('c')">⚙️ Config</button>
 </div>
-
 <div class="pages">
 
-  <!-- SCANNER -->
   <div class="page on" id="ps">
     <div class="cambox">
       <video id="vid" autoplay playsinline muted></video>
@@ -144,62 +126,36 @@
         </div>
       </div>
     </div>
-
     <div class="zrow" id="zr">
       <label>🔍</label>
       <input type="range" id="zs" min="1" max="5" step="0.1" value="1" oninput="doZoom(this.value)">
       <span class="zv" id="zv">1×</span>
     </div>
-
+    <div class="info-box" id="ibox"></div>
     <div class="flash" id="flash">
-      <div>
-        <div class="flash-lbl">Código lido ✓</div>
-        <div class="flash-code" id="flash-code"></div>
-      </div>
+      <div><div class="flash-lbl">Código lido ✓</div><div class="flash-code" id="fc"></div></div>
     </div>
-
     <div class="counter-row">
       <div class="cnt"><div class="cnum" id="ctot">0</div><div class="clbl">lidos</div></div>
       <div class="cnt"><div class="cnum" id="cdup">0</div><div class="clbl">duplicados</div></div>
     </div>
-
-    <button class="btn pri" id="btnc" onclick="toggle()">
-      <span id="bico">📷</span><span id="btxt">Iniciar câmera</span>
-    </button>
-    <button class="btn" onclick="showTab('l')" style="border-color:var(--gb);color:var(--green);">
-      📋 Ver lista de códigos
-    </button>
+    <button class="btn pri" id="btnc" onclick="toggle()"><span id="bico">📷</span><span id="btxt">Iniciar câmera</span></button>
+    <button class="btn" onclick="showTab('l')" style="border-color:var(--gb);color:var(--green);">📋 Ver lista de códigos</button>
   </div>
 
-  <!-- LISTA -->
   <div class="page" id="pl">
     <div class="list-header">
-      <div class="list-title">Códigos lidos (<span id="list-count">0</span>)</div>
+      <div class="list-title">Códigos (<span id="lcount">0</span>)</div>
       <button class="copy-all-btn" onclick="copyAll()">📋 Copiar todos</button>
     </div>
-
-    <div class="code-list" id="code-list">
-      <div class="empty-list">Nenhum código ainda.<br>Escaneie pela aba Scanner.</div>
-    </div>
-
+    <div class="code-list" id="clist"><div class="empty-list">Nenhum código ainda.</div></div>
     <button class="btn dng" onclick="clearAll()">🗑 Limpar lista</button>
   </div>
 
-  <!-- CONFIG -->
   <div class="page" id="pc">
     <div class="card">
-      <div class="ctitle">Sobre o app</div>
-      <div style="font-size:13px;color:var(--t2);line-height:1.7;">
-        Este app lê os códigos das etiquetas e os acumula numa lista.<br><br>
-        Toque em <strong style="color:var(--text)">📋 Copiar todos</strong> para copiar todos os códigos de uma vez e colar na planilha, um por linha.<br><br>
-        Você também pode tocar em cada código individualmente para copiá-lo.
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="ctitle">Envio automático para Google Sheets</div>
-      <div class="srow"><div class="sbadge">1</div><div class="stxt">No Google Sheets, vá em <strong>Extensões → Apps Script</strong></div></div>
-      <div class="srow"><div class="sbadge">2</div><div class="stxt">Adicione no final do <strong>Código.gs</strong></div></div>
+      <div class="ctitle">Envio automático (opcional)</div>
+      <div class="srow"><div class="sbadge">1</div><div class="stxt">No Google Sheets, vá em <strong>Extensões → Apps Script</strong> e adicione no final do <strong>Código.gs</strong></div></div>
       <div class="cblk" id="scr">function doPost(e) {
   const sheet = SpreadsheetApp
     .getActiveSpreadsheet()
@@ -213,10 +169,9 @@
   sheet.getRange(row, 1).setValue(data.code);
   return ContentService.createTextResponse("ok");
 }</div>
-      <button class="btn" style="margin-bottom:14px" onclick="cpScript(this)">📋 Copiar script</button>
-      <div class="srow"><div class="sbadge">3</div><div class="stxt"><strong>Implantar → Novo deploy</strong> como Web App, acesso: <strong>Qualquer pessoa</strong></div></div>
-      <div class="srow"><div class="sbadge">4</div><div class="stxt">Cole a URL abaixo para envio automático</div></div>
-      <div class="flbl">URL do Web App (opcional)</div>
+      <button class="btn" style="margin-bottom:12px" onclick="cpS(this)">📋 Copiar script</button>
+      <div class="srow"><div class="sbadge">2</div><div class="stxt"><strong>Implantar → Novo deploy</strong> como Web App, acesso: <strong>Qualquer pessoa</strong></div></div>
+      <div class="flbl">URL do Web App</div>
       <input type="url" id="iurl" placeholder="https://script.google.com/macros/s/...">
       <button class="btn pri" onclick="saveConf()">💾 Salvar</button>
       <div class="mok" id="mok">✓ Salvo!</div>
@@ -224,61 +179,62 @@
   </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jsqr/1.4.0/jsQR.min.js"></script>
 <script>
-let codes=[], active=false, stream=null, raf=null, vtrack=null;
+let codes=[], active=false, stream=null, raf=null, vtrack=null, detector=null;
 let lastCode='', lastT=0, dups=0;
 const COOL=3000;
-const cv=document.createElement('canvas'), cx=cv.getContext('2d');
+const cv2=document.createElement('canvas'), cx2=cv2.getContext('2d');
 
 function showTab(t){
   ['s','l','c'].forEach((id,i)=>{
     document.getElementById('p'+id).classList.toggle('on',id===t);
     document.querySelectorAll('.tab')[i].classList.toggle('on',id===t);
   });
-  if(t==='l') renderList();
+  if(t==='l')renderList();
 }
-
 const gurl=()=>localStorage.getItem('qr_url')||'';
-function saveConf(){
-  localStorage.setItem('qr_url',document.getElementById('iurl').value.trim());
-  const m=document.getElementById('mok');m.classList.add('on');
-  setTimeout(()=>m.classList.remove('on'),2000);
-}
-function cpScript(btn){
-  navigator.clipboard.writeText(document.getElementById('scr').textContent).catch(()=>{});
-  btn.textContent='✓ Copiado!';setTimeout(()=>btn.textContent='📋 Copiar script',2000);
-}
-function doZoom(v){
-  document.getElementById('zv').textContent=parseFloat(v).toFixed(1)+'×';
-  if(!vtrack)return;
-  try{const c=vtrack.getCapabilities();if(c&&c.zoom){const z=c.zoom.min+(c.zoom.max-c.zoom.min)*((v-1)/4);vtrack.applyConstraints({advanced:[{zoom:z}]});}}catch(e){}
+function saveConf(){localStorage.setItem('qr_url',document.getElementById('iurl').value.trim());const m=document.getElementById('mok');m.classList.add('on');setTimeout(()=>m.classList.remove('on'),2000);}
+function cpS(btn){navigator.clipboard.writeText(document.getElementById('scr').textContent).catch(()=>{});btn.textContent='✓ Copiado!';setTimeout(()=>btn.textContent='📋 Copiar script',2000);}
+function doZoom(v){document.getElementById('zv').textContent=parseFloat(v).toFixed(1)+'×';if(!vtrack)return;try{const c=vtrack.getCapabilities();if(c&&c.zoom){const z=c.zoom.min+(c.zoom.max-c.zoom.min)*((v-1)/4);vtrack.applyConstraints({advanced:[{zoom:z}]});}}catch(e){}}
+
+function showInfo(msg,type){
+  const b=document.getElementById('ibox');
+  b.textContent=msg;b.className='info-box on';
+  if(type==='err')b.style.cssText='background:var(--rbg);border-radius:var(--rs);padding:10px 12px;margin-bottom:10px;font-size:12px;color:var(--red);line-height:1.5;display:block;';
+  else b.style.cssText='';
 }
 
 async function toggle(){
   if(active){stopScan();return;}
   const btn=document.getElementById('btnc');
-  btn.disabled=true;
-  document.getElementById('btxt').textContent='Abrindo...';
+  btn.disabled=true;document.getElementById('btxt').textContent='Abrindo...';
   try{
+    // Try native BarcodeDetector first (Chrome Android)
+    if('BarcodeDetector' in window){
+      const formats=await BarcodeDetector.getSupportedFormats();
+      detector=new BarcodeDetector({formats});
+      showInfo('✓ Usando leitor nativo do Android — máxima compatibilidade');
+    } else {
+      detector=null;
+      showInfo('Usando leitor JS — pode ter dificuldade com reflexo no plástico');
+    }
+
     stream=await navigator.mediaDevices.getUserMedia({
       video:{facingMode:{exact:'environment'},width:{ideal:1920},height:{ideal:1920}},audio:false
     }).catch(()=>navigator.mediaDevices.getUserMedia({
       video:{facingMode:'environment',width:{ideal:1920},height:{ideal:1920}},audio:false
     }));
-
     vtrack=stream.getVideoTracks()[0];
     try{
       const caps=vtrack.getCapabilities();
       const adv={};
-      if(caps.focusMode?.includes('continuous')) adv.focusMode='continuous';
-      if(caps.zoom) document.getElementById('zr').classList.add('on');
-      if(Object.keys(adv).length) await vtrack.applyConstraints({advanced:[adv]});
+      if(caps.focusMode?.includes('continuous'))adv.focusMode='continuous';
+      if(caps.zoom)document.getElementById('zr').classList.add('on');
+      if(Object.keys(adv).length)await vtrack.applyConstraints({advanced:[adv]});
     }catch(e){}
 
     const vid=document.getElementById('vid');
-    vid.srcObject=stream;
-    await vid.play();
+    vid.srcObject=stream;await vid.play();
     document.getElementById('idle').style.display='none';
     document.getElementById('ov').style.display='flex';
     active=true;
@@ -297,40 +253,49 @@ async function toggle(){
 function stopScan(){
   active=false;cancelAnimationFrame(raf);
   if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;}
-  vtrack=null;
+  vtrack=null;detector=null;
   document.getElementById('vid').srcObject=null;
   document.getElementById('idle').style.display='flex';
   document.getElementById('ov').style.display='none';
   document.getElementById('zr').classList.remove('on');
+  document.getElementById('ibox').classList.remove('on');
   document.getElementById('bico').textContent='📷';
   document.getElementById('btxt').textContent='Iniciar câmera';
   document.getElementById('btnc').className='btn pri';
 }
 
-function tick(){
+async function tick(){
   if(!active)return;
   const vid=document.getElementById('vid');
   if(vid.readyState===vid.HAVE_ENOUGH_DATA){
-    const W=vid.videoWidth,H=vid.videoHeight;
-    cv.width=W;cv.height=H;
-    cx.drawImage(vid,0,0);
+    let code=null;
 
-    let qr=null;
-    // 1. full
-    qr=jsQR(cx.getImageData(0,0,W,H).data,W,H,{inversionAttempts:'attemptBoth'});
-    // 2. center crop
-    if(!qr){const ox=Math.floor(W*.15),oy=Math.floor(H*.15),cw=Math.floor(W*.7),ch=Math.floor(H*.7);qr=jsQR(cx.getImageData(ox,oy,cw,ch).data,cw,ch,{inversionAttempts:'attemptBoth'});}
-    // 3. high contrast
-    if(!qr){cx.filter='contrast(3) grayscale(1)';cx.drawImage(vid,0,0);cx.filter='none';qr=jsQR(cx.getImageData(0,0,W,H).data,W,H,{inversionAttempts:'attemptBoth'});}
+    if(detector){
+      // Native BarcodeDetector — reads directly from video element, handles glare
+      try{
+        const results=await detector.detect(vid);
+        if(results.length>0) code=results[0].rawValue;
+      }catch(e){}
+    }
+
+    if(!code){
+      // Fallback: jsQR with multiple strategies
+      const W=vid.videoWidth,H=vid.videoHeight;
+      cv2.width=W;cv2.height=H;
+      cx2.drawImage(vid,0,0);
+      const jsqr=window.jsQR;
+      if(jsqr){
+        let q=jsqr(cx2.getImageData(0,0,W,H).data,W,H,{inversionAttempts:'attemptBoth'});
+        if(!q){cx2.filter='contrast(3) grayscale(1)';cx2.drawImage(vid,0,0);cx2.filter='none';q=jsqr(cx2.getImageData(0,0,W,H).data,W,H,{inversionAttempts:'attemptBoth'});}
+        if(q) code=q.data;
+      }
+    }
 
     const fr=document.getElementById('fr');
-    if(qr){
+    if(code){
       fr.classList.add('hit');
       const now=Date.now();
-      if(qr.data!==lastCode||now-lastT>COOL){
-        lastCode=qr.data;lastT=now;
-        onCode(qr.data);
-      }
+      if(code!==lastCode||now-lastT>COOL){lastCode=code;lastT=now;onCode(code);}
     } else {
       fr.classList.remove('hit');
     }
@@ -340,82 +305,46 @@ function tick(){
 
 async function onCode(code){
   if(navigator.vibrate)navigator.vibrate(80);
-
-  // check duplicate
   const isDup=codes.some(c=>c.code===code);
   if(isDup){dups++;document.getElementById('cdup').textContent=dups;return;}
-
   codes.unshift({code,time:new Date()});
-  document.getElementById('ctot').textContent=codes.length;
-  document.getElementById('tab-count').textContent=codes.length;
-  document.getElementById('list-count').textContent=codes.length;
-
-  // flash
-  const f=document.getElementById('flash');
-  document.getElementById('flash-code').textContent=code;
-  f.classList.add('on');
-  setTimeout(()=>f.classList.remove('on'),2500);
-
-  // auto-send if URL configured
+  const n=codes.length;
+  document.getElementById('ctot').textContent=n;
+  document.getElementById('tab-count').textContent=n;
+  document.getElementById('lcount').textContent=n;
+  document.getElementById('badge').textContent=n+'✓';
+  document.getElementById('fc').textContent=code;
+  document.getElementById('flash').classList.add('on');
+  setTimeout(()=>document.getElementById('flash').classList.remove('on'),2500);
   const url=gurl();
-  if(url){
-    try{await fetch(url,{method:'POST',body:JSON.stringify({code,ts:new Date().toISOString()}),headers:{'Content-Type':'application/json'}});}catch(e){}
-  }
+  if(url){try{await fetch(url,{method:'POST',body:JSON.stringify({code,ts:new Date().toISOString()}),headers:{'Content-Type':'application/json'}});}catch(e){}}
 }
 
 function renderList(){
-  const el=document.getElementById('code-list');
-  document.getElementById('list-count').textContent=codes.length;
-  if(!codes.length){
-    el.innerHTML='<div class="empty-list">Nenhum código ainda.<br>Escaneie pela aba Scanner.</div>';
-    return;
-  }
+  const el=document.getElementById('clist');
+  document.getElementById('lcount').textContent=codes.length;
+  if(!codes.length){el.innerHTML='<div class="empty-list">Nenhum código ainda.</div>';return;}
   el.innerHTML=codes.map((c,i)=>`
-    <div class="code-item" onclick="copyOne('${c.code.replace(/'/g,"\\'")}', this)">
+    <div class="code-item" onclick="copyOne(${i},this)">
       <span class="code-num">${codes.length-i}</span>
       <span class="code-val">${c.code}</span>
       <span class="code-time">${c.time.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</span>
-      <button class="code-del" onclick="event.stopPropagation();deleteCode(${i})">×</button>
+      <button class="code-del" onclick="event.stopPropagation();delCode(${i})">×</button>
     </div>`).join('');
 }
-
-function copyOne(code, el){
-  navigator.clipboard.writeText(code).catch(()=>{});
-  const orig=el.style.background;
-  el.style.background='var(--gbg)';
-  setTimeout(()=>el.style.background=orig,600);
-}
-
+function copyOne(i,el){navigator.clipboard.writeText(codes[i].code).catch(()=>{});el.style.background='var(--gbg)';setTimeout(()=>el.style.background='',600);}
 function copyAll(){
   if(!codes.length)return;
-  const txt=codes.map(c=>c.code).reverse().join('\n');
-  navigator.clipboard.writeText(txt).then(()=>{
-    const btn=document.querySelector('.copy-all-btn');
-    btn.textContent='✓ Copiado!';
-    setTimeout(()=>btn.textContent='📋 Copiar todos',2000);
+  navigator.clipboard.writeText([...codes].reverse().map(c=>c.code).join('\n')).then(()=>{
+    const b=document.querySelector('.copy-all-btn');b.textContent='✓ Copiado!';setTimeout(()=>b.textContent='📋 Copiar todos',2000);
   }).catch(()=>{});
 }
+function delCode(i){codes.splice(i,1);document.getElementById('ctot').textContent=codes.length;document.getElementById('tab-count').textContent=codes.length;renderList();}
+function clearAll(){if(!confirm('Limpar lista?'))return;codes=[];dups=0;['ctot','cdup','tab-count'].forEach(id=>document.getElementById(id).textContent='0');document.getElementById('badge').textContent='';document.getElementById('flash').classList.remove('on');renderList();}
 
-function deleteCode(i){
-  codes.splice(i,1);
-  document.getElementById('ctot').textContent=codes.length;
-  document.getElementById('tab-count').textContent=codes.length;
-  renderList();
-}
-
-function clearAll(){
-  if(!confirm('Limpar toda a lista?'))return;
-  codes=[];dups=0;
-  document.getElementById('ctot').textContent='0';
-  document.getElementById('cdup').textContent='0';
-  document.getElementById('tab-count').textContent='0';
-  document.getElementById('flash').classList.remove('on');
-  renderList();
-}
-
-window.addEventListener('load',()=>{
-  const u=gurl();if(u)document.getElementById('iurl').value=u;
-});
+window.addEventListener('load',()=>{const u=gurl();if(u)document.getElementById('iurl').value=u;});
 </script>
+<!-- jsQR as fallback -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsqr/1.4.0/jsQR.min.js"></script>
 </body>
 </html>
