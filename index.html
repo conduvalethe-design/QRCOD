@@ -10,62 +10,83 @@
 <style>
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
   :root{
-    --bg:#f5f5f3;--surface:#fff;--border:rgba(0,0,0,0.1);--bmed:rgba(0,0,0,0.18);
+    --bg:#f5f5f3;--surface:#fff;--border:rgba(0,0,0,0.1);--bmed:rgba(0,0,0,0.2);
     --text:#1a1a18;--t2:#6b6b68;--t3:#9b9b97;
     --green:#0f6e56;--gbg:#e1f5ee;--gb:rgba(15,110,86,0.25);
     --red:#993c1d;--rbg:#faece7;--rb:rgba(153,60,29,0.25);
     --blue:#185fa5;--bbg:#e6f1fb;
-    --ambg:#faeeda;--am:#854f0b;
     --r:14px;--rs:9px;
   }
   @media(prefers-color-scheme:dark){:root{
-    --bg:#1a1a18;--surface:#242422;--border:rgba(255,255,255,0.1);--bmed:rgba(255,255,255,0.18);
+    --bg:#1a1a18;--surface:#242422;--border:rgba(255,255,255,0.1);--bmed:rgba(255,255,255,0.2);
     --text:#f0f0ec;--t2:#9b9b97;--t3:#6b6b68;
     --green:#5dcaa5;--gbg:#04342c;--gb:rgba(93,202,165,0.25);
     --red:#f0997b;--rbg:#4a1b0c;--rb:rgba(240,153,123,0.25);
     --blue:#85b7eb;--bbg:#042c53;
-    --ambg:#412402;--am:#ef9f27;
   }}
   html,body{height:100%;overflow:hidden;}
   body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column;height:100dvh;}
+
   .topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;padding-top:max(12px,env(safe-area-inset-top));background:var(--surface);border-bottom:0.5px solid var(--border);flex-shrink:0;}
   .topbar-title{font-size:17px;font-weight:600;}
   .tsub{font-size:11px;color:var(--t2);margin-top:1px;}
-  .dot{width:8px;height:8px;border-radius:50%;background:var(--t3);}
-  .dot.ok{background:var(--green);}
+
   .tabs{display:flex;background:var(--surface);border-bottom:0.5px solid var(--border);flex-shrink:0;}
   .tab{flex:1;padding:11px 0;font-size:13px;font-weight:500;color:var(--t2);background:none;border:none;cursor:pointer;border-bottom:2px solid transparent;}
   .tab.on{color:var(--text);border-bottom-color:var(--text);}
+
   .pages{flex:1;overflow:hidden;position:relative;}
-  .page{position:absolute;inset:0;overflow-y:auto;padding:16px;display:none;padding-bottom:max(16px,env(safe-area-inset-bottom));}
+  .page{position:absolute;inset:0;overflow-y:auto;padding:14px;display:none;padding-bottom:max(14px,env(safe-area-inset-bottom));}
   .page.on{display:block;}
 
-  /* scan area */
-  .scan-area{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--r);padding:28px 20px;text-align:center;margin-bottom:14px;}
-  .scan-icon{font-size:64px;margin-bottom:12px;display:block;}
-  .scan-title{font-size:18px;font-weight:600;margin-bottom:6px;}
-  .scan-sub{font-size:13px;color:var(--t2);line-height:1.5;margin-bottom:20px;}
-  .btn-scan-big{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:16px;border-radius:var(--rs);font-size:16px;font-weight:700;cursor:pointer;background:var(--text);color:var(--bg);border:none;transition:transform .1s;}
-  .btn-scan-big:active{transform:scale(.97);}
+  /* camera */
+  .cambox{position:relative;width:100%;aspect-ratio:1;background:#000;border-radius:var(--r);overflow:hidden;margin-bottom:10px;}
+  #vid{width:100%;height:100%;object-fit:cover;display:block;}
+  .ov{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;}
+  .frame{width:64%;aspect-ratio:1;border:2.5px solid rgba(255,255,255,0.6);border-radius:10px;position:relative;transition:border-color .15s,box-shadow .15s;}
+  .frame.hit{border-color:#4ade80;box-shadow:0 0 0 3px rgba(74,222,128,.35);}
+  .corner{position:absolute;width:22px;height:22px;}
+  .tl{top:-2px;left:-2px;border-top:3px solid #fff;border-left:3px solid #fff;border-radius:4px 0 0 0;}
+  .tr{top:-2px;right:-2px;border-top:3px solid #fff;border-right:3px solid #fff;border-radius:0 4px 0 0;}
+  .bl{bottom:-2px;left:-2px;border-bottom:3px solid #fff;border-left:3px solid #fff;border-radius:0 0 0 4px;}
+  .br{bottom:-2px;right:-2px;border-bottom:3px solid #fff;border-right:3px solid #fff;border-radius:0 0 4px 0;}
+  .sline{position:absolute;left:4%;right:4%;height:2px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.85),transparent);animation:sl 2s ease-in-out infinite;}
+  @keyframes sl{0%,100%{top:6%}50%{top:90%}}
+  .idle{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;color:rgba(255,255,255,.65);font-size:13px;gap:8px;}
 
-  /* result */
-  .result-box{background:var(--gbg);border:0.5px solid var(--gb);border-radius:var(--r);padding:16px;margin-bottom:14px;display:none;}
-  .result-box.on{display:block;}
-  .result-box.err{background:var(--rbg);border-color:var(--rb);}
-  .result-label{font-size:11px;color:var(--t2);margin-bottom:4px;font-weight:500;}
-  .result-code{font-size:16px;font-weight:700;color:var(--green);word-break:break-all;margin-bottom:8px;}
-  .result-box.err .result-code{color:var(--red);}
-  .result-status{font-size:12px;color:var(--t2);}
+  /* last read flash */
+  .flash{background:var(--gbg);border:0.5px solid var(--gb);border-radius:var(--rs);padding:10px 14px;margin-bottom:10px;display:none;align-items:center;gap:10px;}
+  .flash.on{display:flex;}
+  .flash-code{font-size:14px;font-weight:700;color:var(--green);flex:1;word-break:break-all;}
+  .flash-lbl{font-size:11px;color:var(--t2);margin-bottom:2px;}
 
-  .cnts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
-  .cnt{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--rs);padding:12px;text-align:center;}
-  .cnum{font-size:26px;font-weight:700;letter-spacing:-1px;}
-  .clbl{font-size:11px;color:var(--t2);margin-top:2px;}
+  /* code list */
+  .list-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+  .list-title{font-size:14px;font-weight:600;}
+  .copy-all-btn{padding:7px 14px;border-radius:var(--rs);font-size:13px;font-weight:600;background:var(--text);color:var(--bg);border:none;cursor:pointer;}
+  .copy-all-btn:active{opacity:.8;}
+
+  .code-list{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:10px;}
+  .code-item{display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:0.5px solid var(--border);}
+  .code-item:last-child{border-bottom:none;}
+  .code-num{font-size:11px;color:var(--t3);width:18px;text-align:right;flex-shrink:0;}
+  .code-val{flex:1;font-size:14px;font-weight:500;word-break:break-all;}
+  .code-time{font-size:11px;color:var(--t3);flex-shrink:0;}
+  .code-del{background:none;border:none;color:var(--t3);font-size:18px;cursor:pointer;padding:0 2px;flex-shrink:0;}
+  .code-del:active{color:var(--red);}
+  .empty-list{padding:28px;text-align:center;color:var(--t3);font-size:13px;}
+
+  .counter-row{display:flex;gap:8px;margin-bottom:10px;}
+  .cnt{flex:1;background:var(--surface);border:0.5px solid var(--border);border-radius:var(--rs);padding:10px;text-align:center;}
+  .cnum{font-size:22px;font-weight:700;letter-spacing:-1px;}
+  .clbl{font-size:11px;color:var(--t2);margin-top:1px;}
 
   .btn{width:100%;padding:13px;border-radius:var(--rs);font-size:14px;font-weight:600;cursor:pointer;border:0.5px solid var(--bmed);background:var(--surface);color:var(--text);margin-bottom:8px;display:flex;align-items:center;justify-content:center;gap:8px;transition:transform .1s;}
   .btn:active{transform:scale(.97);}
+  .pri{background:var(--text);color:var(--bg);border-color:transparent;}
   .dng{background:var(--rbg);color:var(--red);border-color:var(--rb);}
 
+  /* config */
   .card{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:14px;}
   .ctitle{font-size:15px;font-weight:600;margin-bottom:12px;}
   .flbl{font-size:12px;color:var(--t2);margin-bottom:5px;font-weight:500;}
@@ -77,67 +98,106 @@
   .cblk{background:var(--bg);border-radius:var(--rs);border:0.5px solid var(--border);padding:12px;font-family:'Menlo','Courier New',monospace;font-size:11px;line-height:1.6;white-space:pre-wrap;word-break:break-all;margin-bottom:8px;}
   .mok{font-size:13px;color:var(--green);margin-top:8px;display:none;font-weight:500;}
   .mok.on{display:block;}
-  .li{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:0.5px solid var(--border);font-size:13px;}
-  .li:last-child{border-bottom:none;}
-  .lcode{flex:1;font-weight:500;word-break:break-all;}
-  .lt{font-size:11px;color:var(--t3);flex-shrink:0;}
-  .badge{font-size:11px;font-weight:600;padding:3px 9px;border-radius:99px;flex-shrink:0;}
-  .bok{background:var(--gbg);color:var(--green);}
-  .berr{background:var(--rbg);color:var(--red);}
-  .bloc{background:var(--ambg);color:var(--am);}
-  .empty{text-align:center;padding:36px 20px;color:var(--t3);font-size:14px;}
 
-  /* hidden file input */
-  #cam-input{position:absolute;opacity:0;width:0;height:0;pointer-events:none;}
+  .zrow{display:none;align-items:center;gap:10px;margin-bottom:10px;}
+  .zrow.on{display:flex;}
+  .zrow label{font-size:12px;color:var(--t2);white-space:nowrap;}
+  .zrow input{flex:1;}
+  .zv{font-size:12px;color:var(--t2);min-width:28px;text-align:right;}
 </style>
 </head>
 <body>
 
-<!-- hidden input that opens native camera with QR/barcode scanning -->
-<input type="file" id="cam-input" accept="image/*" capture="environment">
-
 <div class="topbar">
   <div>
     <div class="topbar-title">Estoque QR</div>
-    <div class="tsub" id="tsub">Planilha não configurada</div>
+    <div class="tsub" id="tsub">Toque para escanear</div>
   </div>
-  <div class="dot" id="tdot"></div>
+  <span id="cnt-badge" style="font-size:13px;font-weight:600;color:var(--green);display:none;"></span>
 </div>
+
 <div class="tabs">
   <button class="tab on" onclick="showTab('s')">📷 Scanner</button>
-  <button class="tab" onclick="showTab('c')">⚙️ Configurar</button>
-  <button class="tab" onclick="showTab('l')">📋 Histórico</button>
+  <button class="tab" onclick="showTab('l')">📋 Lista (<span id="tab-count">0</span>)</button>
+  <button class="tab" onclick="showTab('c')">⚙️ Config</button>
 </div>
 
 <div class="pages">
+
+  <!-- SCANNER -->
   <div class="page on" id="ps">
-
-    <div class="scan-area">
-      <span class="scan-icon">📷</span>
-      <div class="scan-title">Ler código da etiqueta</div>
-      <div class="scan-sub">Abre a câmera nativa do celular — a mesma que já lê seus códigos normalmente.</div>
-      <button class="btn-scan-big" onclick="openCamera()">
-        📷 Abrir câmera
-      </button>
+    <div class="cambox">
+      <video id="vid" autoplay playsinline muted></video>
+      <div class="idle" id="idle">
+        <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5">
+          <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+          <rect x="3" y="14" width="7" height="7" rx="1"/>
+          <path d="M14 14h2v2h-2zM18 14h3v3h-3zM14 18h3v3h-3zM19 19h2v2h-2z"/>
+        </svg>
+        Toque em iniciar câmera
+      </div>
+      <div class="ov" id="ov" style="display:none">
+        <div class="frame" id="fr">
+          <div class="corner tl"></div><div class="corner tr"></div>
+          <div class="corner bl"></div><div class="corner br"></div>
+          <div class="sline"></div>
+        </div>
+      </div>
     </div>
 
-    <div class="result-box" id="rbox">
-      <div class="result-label">Último código lido</div>
-      <div class="result-code" id="rcode">—</div>
-      <div class="result-status" id="rstatus"></div>
+    <div class="zrow" id="zr">
+      <label>🔍</label>
+      <input type="range" id="zs" min="1" max="5" step="0.1" value="1" oninput="doZoom(this.value)">
+      <span class="zv" id="zv">1×</span>
     </div>
 
-    <div class="cnts">
-      <div class="cnt"><div class="cnum" id="ctot">0</div><div class="clbl">leituras</div></div>
-      <div class="cnt"><div class="cnum" id="cok">0</div><div class="clbl">enviados</div></div>
+    <div class="flash" id="flash">
+      <div>
+        <div class="flash-lbl">Código lido ✓</div>
+        <div class="flash-code" id="flash-code"></div>
+      </div>
     </div>
 
-    <button class="btn dng" onclick="clearAll()">🗑 Limpar histórico</button>
+    <div class="counter-row">
+      <div class="cnt"><div class="cnum" id="ctot">0</div><div class="clbl">lidos</div></div>
+      <div class="cnt"><div class="cnum" id="cdup">0</div><div class="clbl">duplicados</div></div>
+    </div>
+
+    <button class="btn pri" id="btnc" onclick="toggle()">
+      <span id="bico">📷</span><span id="btxt">Iniciar câmera</span>
+    </button>
+    <button class="btn" onclick="showTab('l')" style="border-color:var(--gb);color:var(--green);">
+      📋 Ver lista de códigos
+    </button>
   </div>
 
+  <!-- LISTA -->
+  <div class="page" id="pl">
+    <div class="list-header">
+      <div class="list-title">Códigos lidos (<span id="list-count">0</span>)</div>
+      <button class="copy-all-btn" onclick="copyAll()">📋 Copiar todos</button>
+    </div>
+
+    <div class="code-list" id="code-list">
+      <div class="empty-list">Nenhum código ainda.<br>Escaneie pela aba Scanner.</div>
+    </div>
+
+    <button class="btn dng" onclick="clearAll()">🗑 Limpar lista</button>
+  </div>
+
+  <!-- CONFIG -->
   <div class="page" id="pc">
     <div class="card">
-      <div class="ctitle">Conectar ao Google Sheets</div>
+      <div class="ctitle">Sobre o app</div>
+      <div style="font-size:13px;color:var(--t2);line-height:1.7;">
+        Este app lê os códigos das etiquetas e os acumula numa lista.<br><br>
+        Toque em <strong style="color:var(--text)">📋 Copiar todos</strong> para copiar todos os códigos de uma vez e colar na planilha, um por linha.<br><br>
+        Você também pode tocar em cada código individualmente para copiá-lo.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ctitle">Envio automático para Google Sheets</div>
       <div class="srow"><div class="sbadge">1</div><div class="stxt">No Google Sheets, vá em <strong>Extensões → Apps Script</strong></div></div>
       <div class="srow"><div class="sbadge">2</div><div class="stxt">Adicione no final do <strong>Código.gs</strong></div></div>
       <div class="cblk" id="scr">function doPost(e) {
@@ -155,161 +215,206 @@
 }</div>
       <button class="btn" style="margin-bottom:14px" onclick="cpScript(this)">📋 Copiar script</button>
       <div class="srow"><div class="sbadge">3</div><div class="stxt"><strong>Implantar → Novo deploy</strong> como Web App, acesso: <strong>Qualquer pessoa</strong></div></div>
-      <div class="srow"><div class="sbadge">4</div><div class="stxt">Cole a URL gerada abaixo</div></div>
-      <div class="flbl">URL do Web App</div>
+      <div class="srow"><div class="sbadge">4</div><div class="stxt">Cole a URL abaixo para envio automático</div></div>
+      <div class="flbl">URL do Web App (opcional)</div>
       <input type="url" id="iurl" placeholder="https://script.google.com/macros/s/...">
-      <button class="btn" style="background:var(--text);color:var(--bg);border-color:transparent;" onclick="saveConf()">💾 Salvar configuração</button>
-      <div class="mok" id="mok">✓ Configuração salva!</div>
-    </div>
-  </div>
-
-  <div class="page" id="pl">
-    <div class="card">
-      <div class="ctitle">Leituras da sessão</div>
-      <div id="llist"><div class="empty">📭<br>Nenhuma leitura ainda</div></div>
+      <button class="btn pri" onclick="saveConf()">💾 Salvar</button>
+      <div class="mok" id="mok">✓ Salvo!</div>
     </div>
   </div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jsqr/1.4.0/jsQR.min.js"></script>
 <script>
-let log=[], tot=0, sent=0;
+let codes=[], active=false, stream=null, raf=null, vtrack=null;
+let lastCode='', lastT=0, dups=0;
+const COOL=3000;
+const cv=document.createElement('canvas'), cx=cv.getContext('2d');
 
 function showTab(t){
-  ['s','c','l'].forEach((id,i)=>{
+  ['s','l','c'].forEach((id,i)=>{
     document.getElementById('p'+id).classList.toggle('on',id===t);
     document.querySelectorAll('.tab')[i].classList.toggle('on',id===t);
   });
-  if(t==='l') renderLog();
+  if(t==='l') renderList();
 }
+
 const gurl=()=>localStorage.getItem('qr_url')||'';
-function upTop(){
-  const ok=!!gurl();
-  document.getElementById('tdot').classList.toggle('ok',ok);
-  document.getElementById('tsub').textContent=ok?'Planilha conectada':'Planilha não configurada';
-}
 function saveConf(){
   localStorage.setItem('qr_url',document.getElementById('iurl').value.trim());
   const m=document.getElementById('mok');m.classList.add('on');
-  setTimeout(()=>m.classList.remove('on'),2500);upTop();
+  setTimeout(()=>m.classList.remove('on'),2000);
 }
 function cpScript(btn){
   navigator.clipboard.writeText(document.getElementById('scr').textContent).catch(()=>{});
   btn.textContent='✓ Copiado!';setTimeout(()=>btn.textContent='📋 Copiar script',2000);
 }
-
-function openCamera(){
-  document.getElementById('cam-input').click();
+function doZoom(v){
+  document.getElementById('zv').textContent=parseFloat(v).toFixed(1)+'×';
+  if(!vtrack)return;
+  try{const c=vtrack.getCapabilities();if(c&&c.zoom){const z=c.zoom.min+(c.zoom.max-c.zoom.min)*((v-1)/4);vtrack.applyConstraints({advanced:[{zoom:z}]});}}catch(e){}
 }
 
-// When user captures a photo — decode QR/barcode from the image
-document.getElementById('cam-input').addEventListener('change', async function(){
-  const file = this.files[0];
-  if(!file) return;
+async function toggle(){
+  if(active){stopScan();return;}
+  const btn=document.getElementById('btnc');
+  btn.disabled=true;
+  document.getElementById('btxt').textContent='Abrindo...';
+  try{
+    stream=await navigator.mediaDevices.getUserMedia({
+      video:{facingMode:{exact:'environment'},width:{ideal:1920},height:{ideal:1920}},audio:false
+    }).catch(()=>navigator.mediaDevices.getUserMedia({
+      video:{facingMode:'environment',width:{ideal:1920},height:{ideal:1920}},audio:false
+    }));
 
-  // Reset input so same photo triggers again if needed
-  this.value = '';
+    vtrack=stream.getVideoTracks()[0];
+    try{
+      const caps=vtrack.getCapabilities();
+      const adv={};
+      if(caps.focusMode?.includes('continuous')) adv.focusMode='continuous';
+      if(caps.zoom) document.getElementById('zr').classList.add('on');
+      if(Object.keys(adv).length) await vtrack.applyConstraints({advanced:[adv]});
+    }catch(e){}
 
-  const img = new Image();
-  const url = URL.createObjectURL(file);
-  img.onload = async function(){
-    const canvas = document.createElement('canvas');
-    canvas.width = img.width;
-    canvas.height = img.height;
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(img, 0, 0);
-    URL.revokeObjectURL(url);
+    const vid=document.getElementById('vid');
+    vid.srcObject=stream;
+    await vid.play();
+    document.getElementById('idle').style.display='none';
+    document.getElementById('ov').style.display='flex';
+    active=true;
+    document.getElementById('bico').textContent='⏹';
+    document.getElementById('btxt').textContent='Parar câmera';
+    btn.className='btn';btn.disabled=false;
+    tick();
+  }catch(err){
+    btn.disabled=false;
+    document.getElementById('btxt').textContent='Câmera negada — libere nas configurações';
+    document.getElementById('bico').textContent='❌';
+    btn.className='btn dng';
+  }
+}
 
-    const W = canvas.width, H = canvas.height;
-    let code = null;
+function stopScan(){
+  active=false;cancelAnimationFrame(raf);
+  if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;}
+  vtrack=null;
+  document.getElementById('vid').srcObject=null;
+  document.getElementById('idle').style.display='flex';
+  document.getElementById('ov').style.display='none';
+  document.getElementById('zr').classList.remove('on');
+  document.getElementById('bico').textContent='📷';
+  document.getElementById('btxt').textContent='Iniciar câmera';
+  document.getElementById('btnc').className='btn pri';
+}
 
-    // Try 1: full image
-    let imgData = ctx.getImageData(0,0,W,H);
-    let qr = jsQR(imgData.data, W, H, {inversionAttempts:'attemptBoth'});
-    if(qr) code = qr.data;
+function tick(){
+  if(!active)return;
+  const vid=document.getElementById('vid');
+  if(vid.readyState===vid.HAVE_ENOUGH_DATA){
+    const W=vid.videoWidth,H=vid.videoHeight;
+    cv.width=W;cv.height=H;
+    cx.drawImage(vid,0,0);
 
-    // Try 2: center crop
-    if(!code){
-      const ox=Math.floor(W*.1), oy=Math.floor(H*.1), cw=Math.floor(W*.8), ch=Math.floor(H*.8);
-      imgData = ctx.getImageData(ox,oy,cw,ch);
-      qr = jsQR(imgData.data, cw, ch, {inversionAttempts:'attemptBoth'});
-      if(qr) code = qr.data;
-    }
+    let qr=null;
+    // 1. full
+    qr=jsQR(cx.getImageData(0,0,W,H).data,W,H,{inversionAttempts:'attemptBoth'});
+    // 2. center crop
+    if(!qr){const ox=Math.floor(W*.15),oy=Math.floor(H*.15),cw=Math.floor(W*.7),ch=Math.floor(H*.7);qr=jsQR(cx.getImageData(ox,oy,cw,ch).data,cw,ch,{inversionAttempts:'attemptBoth'});}
+    // 3. high contrast
+    if(!qr){cx.filter='contrast(3) grayscale(1)';cx.drawImage(vid,0,0);cx.filter='none';qr=jsQR(cx.getImageData(0,0,W,H).data,W,H,{inversionAttempts:'attemptBoth'});}
 
-    // Try 3: high contrast
-    if(!code){
-      ctx.filter='contrast(2.5) brightness(1.1) grayscale(1)';
-      ctx.drawImage(img,0,0);
-      ctx.filter='none';
-      imgData = ctx.getImageData(0,0,W,H);
-      qr = jsQR(imgData.data, W, H, {inversionAttempts:'attemptBoth'});
-      if(qr) code = qr.data;
-    }
-
-    // Try 4: inverted
-    if(!code){
-      const d = ctx.getImageData(0,0,W,H);
-      for(let i=0;i<d.data.length;i+=4){d.data[i]=255-d.data[i];d.data[i+1]=255-d.data[i+1];d.data[i+2]=255-d.data[i+2];}
-      ctx.putImageData(d,0,0);
-      imgData = ctx.getImageData(0,0,W,H);
-      qr = jsQR(imgData.data, W, H, {inversionAttempts:'dontInvert'});
-      if(qr) code = qr.data;
-    }
-
-    if(code){
-      await onCode(code);
+    const fr=document.getElementById('fr');
+    if(qr){
+      fr.classList.add('hit');
+      const now=Date.now();
+      if(qr.data!==lastCode||now-lastT>COOL){
+        lastCode=qr.data;lastT=now;
+        onCode(qr.data);
+      }
     } else {
-      // show error
-      const rb = document.getElementById('rbox');
-      rb.className='result-box on err';
-      document.getElementById('rcode').textContent='Código não reconhecido';
-      document.getElementById('rstatus').textContent='Tente aproximar mais a câmera do código e fotografar novamente.';
+      fr.classList.remove('hit');
     }
-  };
-  img.src = url;
-});
+  }
+  raf=requestAnimationFrame(tick);
+}
 
 async function onCode(code){
-  tot++;document.getElementById('ctot').textContent=tot;
   if(navigator.vibrate)navigator.vibrate(80);
 
-  const url=gurl();let ok=false;
-  if(url){
-    try{
-      await fetch(url,{method:'POST',body:JSON.stringify({code,ts:new Date().toISOString()}),headers:{'Content-Type':'application/json'}});
-      ok=true;sent++;document.getElementById('cok').textContent=sent;
-    }catch(e){}
-  }
+  // check duplicate
+  const isDup=codes.some(c=>c.code===code);
+  if(isDup){dups++;document.getElementById('cdup').textContent=dups;return;}
 
-  const rb=document.getElementById('rbox');
-  rb.className='result-box on'+(url&&!ok?' err':'');
-  document.getElementById('rcode').textContent=code;
-  document.getElementById('rstatus').textContent=ok?'✓ Enviado para a planilha':(url?'✗ Erro ao enviar — verifique a URL':'📋 Lido (configure a planilha para enviar)');
-  log.unshift({code,time:new Date(),ok,s:!!url});
+  codes.unshift({code,time:new Date()});
+  document.getElementById('ctot').textContent=codes.length;
+  document.getElementById('tab-count').textContent=codes.length;
+  document.getElementById('list-count').textContent=codes.length;
+
+  // flash
+  const f=document.getElementById('flash');
+  document.getElementById('flash-code').textContent=code;
+  f.classList.add('on');
+  setTimeout(()=>f.classList.remove('on'),2500);
+
+  // auto-send if URL configured
+  const url=gurl();
+  if(url){
+    try{await fetch(url,{method:'POST',body:JSON.stringify({code,ts:new Date().toISOString()}),headers:{'Content-Type':'application/json'}});}catch(e){}
+  }
 }
 
-function renderLog(){
-  const el=document.getElementById('llist');
-  if(!log.length){el.innerHTML='<div class="empty">📭<br>Nenhuma leitura ainda</div>';return;}
-  el.innerHTML=log.map(i=>`
-    <div class="li">
-      <div class="lcode">${i.code.length>32?i.code.substring(0,32)+'…':i.code}</div>
-      <div class="lt">${i.time.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</div>
-      <span class="badge ${i.s?(i.ok?'bok':'berr'):'bloc'}">${i.s?(i.ok?'enviado':'erro'):'local'}</span>
+function renderList(){
+  const el=document.getElementById('code-list');
+  document.getElementById('list-count').textContent=codes.length;
+  if(!codes.length){
+    el.innerHTML='<div class="empty-list">Nenhum código ainda.<br>Escaneie pela aba Scanner.</div>';
+    return;
+  }
+  el.innerHTML=codes.map((c,i)=>`
+    <div class="code-item" onclick="copyOne('${c.code.replace(/'/g,"\\'")}', this)">
+      <span class="code-num">${codes.length-i}</span>
+      <span class="code-val">${c.code}</span>
+      <span class="code-time">${c.time.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</span>
+      <button class="code-del" onclick="event.stopPropagation();deleteCode(${i})">×</button>
     </div>`).join('');
 }
+
+function copyOne(code, el){
+  navigator.clipboard.writeText(code).catch(()=>{});
+  const orig=el.style.background;
+  el.style.background='var(--gbg)';
+  setTimeout(()=>el.style.background=orig,600);
+}
+
+function copyAll(){
+  if(!codes.length)return;
+  const txt=codes.map(c=>c.code).reverse().join('\n');
+  navigator.clipboard.writeText(txt).then(()=>{
+    const btn=document.querySelector('.copy-all-btn');
+    btn.textContent='✓ Copiado!';
+    setTimeout(()=>btn.textContent='📋 Copiar todos',2000);
+  }).catch(()=>{});
+}
+
+function deleteCode(i){
+  codes.splice(i,1);
+  document.getElementById('ctot').textContent=codes.length;
+  document.getElementById('tab-count').textContent=codes.length;
+  renderList();
+}
+
 function clearAll(){
-  if(!confirm('Limpar histórico?'))return;
-  log=[];tot=0;sent=0;
+  if(!confirm('Limpar toda a lista?'))return;
+  codes=[];dups=0;
   document.getElementById('ctot').textContent='0';
-  document.getElementById('cok').textContent='0';
-  document.getElementById('rbox').className='result-box';
-  renderLog();
+  document.getElementById('cdup').textContent='0';
+  document.getElementById('tab-count').textContent='0';
+  document.getElementById('flash').classList.remove('on');
+  renderList();
 }
 
 window.addEventListener('load',()=>{
   const u=gurl();if(u)document.getElementById('iurl').value=u;
-  upTop();
 });
 </script>
 </body>
