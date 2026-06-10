@@ -8,45 +8,41 @@
 <meta name="apple-mobile-web-app-title" content="Estoque QR">
 <title>Estoque QR</title>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --bg: #f5f5f3; --surface: #fff; --border: rgba(0,0,0,0.1); --border-med: rgba(0,0,0,0.18);
-    --text: #1a1a18; --text2: #6b6b68; --text3: #9b9b97;
-    --green: #0f6e56; --green-bg: #e1f5ee; --green-b: rgba(15,110,86,0.25);
-    --red: #993c1d; --red-bg: #faece7; --red-b: rgba(153,60,29,0.25);
-    --blue: #185fa5; --blue-bg: #e6f1fb;
-    --amber-bg: #faeeda; --amber: #854f0b;
-    --r: 14px; --rs: 9px;
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  :root{
+    --bg:#f5f5f3;--surface:#fff;--border:rgba(0,0,0,0.1);--bmed:rgba(0,0,0,0.18);
+    --text:#1a1a18;--t2:#6b6b68;--t3:#9b9b97;
+    --green:#0f6e56;--gbg:#e1f5ee;--gb:rgba(15,110,86,0.25);
+    --red:#993c1d;--rbg:#faece7;--rb:rgba(153,60,29,0.25);
+    --blue:#185fa5;--bbg:#e6f1fb;
+    --ambg:#faeeda;--am:#854f0b;
+    --r:14px;--rs:9px;
   }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg:#1a1a18; --surface:#242422; --border:rgba(255,255,255,0.1); --border-med:rgba(255,255,255,0.18);
-      --text:#f0f0ec; --text2:#9b9b97; --text3:#6b6b68;
-      --green:#5dcaa5; --green-bg:#04342c; --green-b:rgba(93,202,165,0.25);
-      --red:#f0997b; --red-bg:#4a1b0c; --red-b:rgba(240,153,123,0.25);
-      --blue:#85b7eb; --blue-bg:#042c53;
-      --amber-bg:#412402; --amber:#ef9f27;
-    }
-  }
+  @media(prefers-color-scheme:dark){:root{
+    --bg:#1a1a18;--surface:#242422;--border:rgba(255,255,255,0.1);--bmed:rgba(255,255,255,0.18);
+    --text:#f0f0ec;--t2:#9b9b97;--t3:#6b6b68;
+    --green:#5dcaa5;--gbg:#04342c;--gb:rgba(93,202,165,0.25);
+    --red:#f0997b;--rbg:#4a1b0c;--rb:rgba(240,153,123,0.25);
+    --blue:#85b7eb;--bbg:#042c53;
+    --ambg:#412402;--am:#ef9f27;
+  }}
   html,body{height:100%;overflow:hidden;}
   body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column;height:100dvh;}
   .topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;padding-top:max(12px,env(safe-area-inset-top));background:var(--surface);border-bottom:0.5px solid var(--border);flex-shrink:0;}
   .topbar-title{font-size:17px;font-weight:600;}
-  .topbar-sub{font-size:11px;color:var(--text2);margin-top:1px;}
-  .dot{width:8px;height:8px;border-radius:50%;background:var(--text3);}
+  .tsub{font-size:11px;color:var(--t2);margin-top:1px;}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--t3);}
   .dot.ok{background:var(--green);}
   .tabs{display:flex;background:var(--surface);border-bottom:0.5px solid var(--border);flex-shrink:0;}
-  .tab{flex:1;padding:11px 0;font-size:13px;font-weight:500;color:var(--text2);background:none;border:none;cursor:pointer;border-bottom:2px solid transparent;}
+  .tab{flex:1;padding:11px 0;font-size:13px;font-weight:500;color:var(--t2);background:none;border:none;cursor:pointer;border-bottom:2px solid transparent;}
   .tab.on{color:var(--text);border-bottom-color:var(--text);}
   .pages{flex:1;overflow:hidden;position:relative;}
   .page{position:absolute;inset:0;overflow-y:auto;padding:14px;display:none;padding-bottom:max(14px,env(safe-area-inset-bottom));}
   .page.on{display:block;}
-
-  /* camera */
   .cambox{position:relative;width:100%;aspect-ratio:1;background:#000;border-radius:var(--r);overflow:hidden;margin-bottom:10px;}
   #vid{width:100%;height:100%;object-fit:cover;display:block;}
-  .overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;}
-  .frame{width:62%;aspect-ratio:1;border:2.5px solid rgba(255,255,255,0.6);border-radius:10px;position:relative;transition:border-color .15s,box-shadow .15s;}
+  .ov{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;}
+  .frame{width:64%;aspect-ratio:1;border:2.5px solid rgba(255,255,255,0.6);border-radius:10px;position:relative;transition:border-color .15s,box-shadow .15s;}
   .frame.hit{border-color:#4ade80;box-shadow:0 0 0 3px rgba(74,222,128,.35);}
   .corner{position:absolute;width:22px;height:22px;}
   .tl{top:-2px;left:-2px;border-top:3px solid #fff;border-left:3px solid #fff;border-radius:4px 0 0 0;}
@@ -56,52 +52,47 @@
   .sline{position:absolute;left:4%;right:4%;height:2px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.85),transparent);animation:sl 2s ease-in-out infinite;}
   @keyframes sl{0%,100%{top:6%}50%{top:90%}}
   .idle{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;color:rgba(255,255,255,.65);font-size:13px;gap:8px;}
-
-  .zoom-row{display:none;align-items:center;gap:10px;margin-bottom:8px;}
-  .zoom-row.on{display:flex;}
-  .zoom-row label{font-size:12px;color:var(--text2);white-space:nowrap;}
-  .zoom-row input{flex:1;}
-  .zv{font-size:12px;color:var(--text2);min-width:28px;text-align:right;}
-
-  .toast{background:var(--green-bg);border:0.5px solid var(--green-b);border-radius:var(--rs);padding:11px 14px;margin-bottom:10px;display:none;align-items:center;gap:10px;}
+  .zrow{display:none;align-items:center;gap:10px;margin-bottom:8px;}
+  .zrow.on{display:flex;}
+  .zrow label{font-size:12px;color:var(--t2);white-space:nowrap;}
+  .zrow input{flex:1;}
+  .zv{font-size:12px;color:var(--t2);min-width:28px;text-align:right;}
+  .toast{background:var(--gbg);border:0.5px solid var(--gb);border-radius:var(--rs);padding:11px 14px;margin-bottom:10px;display:none;align-items:center;gap:10px;}
   .toast.on{display:flex;}
-  .toast.err{background:var(--red-bg);border-color:var(--red-b);}
+  .toast.err{background:var(--rbg);border-color:var(--rb);}
   .ti{font-size:20px;flex-shrink:0;}
-  .tcode{font-size:14px;font-weight:600;color:var(--green);word-break:break-all;flex:1;}
-  .toast.err .tcode{color:var(--red);}
-  .tlbl{font-size:11px;color:var(--text2);margin-bottom:2px;}
-
+  .tc{font-size:14px;font-weight:600;color:var(--green);word-break:break-all;flex:1;}
+  .toast.err .tc{color:var(--red);}
+  .tlbl{font-size:11px;color:var(--t2);margin-bottom:2px;}
   .cnts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
   .cnt{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--rs);padding:12px;text-align:center;}
   .cnum{font-size:26px;font-weight:700;letter-spacing:-1px;}
-  .clbl{font-size:11px;color:var(--text2);margin-top:2px;}
-
-  .btn{width:100%;padding:14px;border-radius:var(--rs);font-size:15px;font-weight:600;cursor:pointer;border:0.5px solid var(--border-med);background:var(--surface);color:var(--text);margin-bottom:8px;display:flex;align-items:center;justify-content:center;gap:8px;transition:transform .1s;}
+  .clbl{font-size:11px;color:var(--t2);margin-top:2px;}
+  .btn{width:100%;padding:14px;border-radius:var(--rs);font-size:15px;font-weight:600;cursor:pointer;border:0.5px solid var(--bmed);background:var(--surface);color:var(--text);margin-bottom:8px;display:flex;align-items:center;justify-content:center;gap:8px;transition:transform .1s;}
   .btn:active{transform:scale(.97);}
   .pri{background:var(--text);color:var(--bg);border-color:transparent;}
-  .dng{background:var(--red-bg);color:var(--red);border-color:var(--red-b);}
-
+  .dng{background:var(--rbg);color:var(--red);border-color:var(--rb);}
   .card{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:14px;}
   .ctitle{font-size:15px;font-weight:600;margin-bottom:12px;}
-  .flbl{font-size:12px;color:var(--text2);margin-bottom:5px;font-weight:500;}
-  input[type=url]{width:100%;padding:12px 14px;border-radius:var(--rs);border:0.5px solid var(--border-med);background:var(--bg);color:var(--text);font-size:14px;margin-bottom:14px;-webkit-appearance:none;}
+  .flbl{font-size:12px;color:var(--t2);margin-bottom:5px;font-weight:500;}
+  input[type=url]{width:100%;padding:12px 14px;border-radius:var(--rs);border:0.5px solid var(--bmed);background:var(--bg);color:var(--text);font-size:14px;margin-bottom:14px;-webkit-appearance:none;}
   .srow{display:flex;gap:10px;margin-bottom:12px;align-items:flex-start;}
-  .sbadge{width:22px;height:22px;border-radius:50%;background:var(--blue-bg);color:var(--blue);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
-  .stxt{font-size:13px;color:var(--text2);line-height:1.55;}
+  .sbadge{width:22px;height:22px;border-radius:50%;background:var(--bbg);color:var(--blue);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+  .stxt{font-size:13px;color:var(--t2);line-height:1.55;}
   .stxt strong{color:var(--text);font-weight:600;}
   .cblk{background:var(--bg);border-radius:var(--rs);border:0.5px solid var(--border);padding:12px;font-family:'Menlo','Courier New',monospace;font-size:11px;line-height:1.6;white-space:pre-wrap;word-break:break-all;margin-bottom:8px;}
   .mok{font-size:13px;color:var(--green);margin-top:8px;display:none;font-weight:500;}
   .mok.on{display:block;}
-
   .li{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:0.5px solid var(--border);font-size:13px;}
   .li:last-child{border-bottom:none;}
   .lcode{flex:1;font-weight:500;word-break:break-all;}
-  .lt{font-size:11px;color:var(--text3);flex-shrink:0;}
+  .lt{font-size:11px;color:var(--t3);flex-shrink:0;}
   .badge{font-size:11px;font-weight:600;padding:3px 9px;border-radius:99px;flex-shrink:0;}
-  .bok{background:var(--green-bg);color:var(--green);}
-  .berr{background:var(--red-bg);color:var(--red);}
-  .bloc{background:var(--amber-bg);color:var(--amber);}
-  .empty{text-align:center;padding:36px 20px;color:var(--text3);font-size:14px;}
+  .bok{background:var(--gbg);color:var(--green);}
+  .berr{background:var(--rbg);color:var(--red);}
+  .bloc{background:var(--ambg);color:var(--am);}
+  .empty{text-align:center;padding:36px 20px;color:var(--t3);font-size:14px;}
+  #libstat{text-align:center;padding:10px;font-size:12px;color:var(--t2);}
 </style>
 </head>
 <body>
@@ -109,11 +100,10 @@
 <div class="topbar">
   <div>
     <div class="topbar-title">Estoque QR</div>
-    <div class="topbar-sub" id="tsub">Planilha não configurada</div>
+    <div class="tsub" id="tsub">Planilha não configurada</div>
   </div>
   <div class="dot" id="tdot"></div>
 </div>
-
 <div class="tabs">
   <button class="tab on" onclick="showTab('s')">📷 Scanner</button>
   <button class="tab" onclick="showTab('c')">⚙️ Configurar</button>
@@ -121,54 +111,52 @@
 </div>
 
 <div class="pages">
-
   <div class="page on" id="ps">
-    <div class="cambox">
-      <video id="vid" autoplay playsinline muted></video>
-      <div class="idle" id="idle">
-        <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5">
-          <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
-          <rect x="3" y="14" width="7" height="7" rx="1"/>
-          <path d="M14 14h2v2h-2zM18 14h3v3h-3zM14 18h3v3h-3zM19 19h2v2h-2z"/>
-        </svg>
-        Toque em iniciar câmera
-      </div>
-      <div class="overlay" id="ov" style="display:none">
-        <div class="frame" id="fr">
-          <div class="corner tl"></div><div class="corner tr"></div>
-          <div class="corner bl"></div><div class="corner br"></div>
-          <div class="sline"></div>
+    <div id="libstat">⏳ Carregando leitor...</div>
+    <div id="scanui" style="display:none">
+      <div class="cambox">
+        <video id="vid" autoplay playsinline muted></video>
+        <div class="idle" id="idle">
+          <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5">
+            <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+            <rect x="3" y="14" width="7" height="7" rx="1"/>
+            <path d="M14 14h2v2h-2zM18 14h3v3h-3zM14 18h3v3h-3zM19 19h2v2h-2z"/>
+          </svg>
+          Toque em iniciar câmera
+        </div>
+        <div class="ov" id="ov" style="display:none">
+          <div class="frame" id="fr">
+            <div class="corner tl"></div><div class="corner tr"></div>
+            <div class="corner bl"></div><div class="corner br"></div>
+            <div class="sline"></div>
+          </div>
         </div>
       </div>
+      <div class="zrow" id="zr">
+        <label>🔍 Zoom</label>
+        <input type="range" id="zs" min="1" max="5" step="0.1" value="1" oninput="doZoom(this.value)">
+        <span class="zv" id="zv">1×</span>
+      </div>
+      <div class="toast" id="toast">
+        <div class="ti" id="ti">✓</div>
+        <div><div class="tlbl" id="tlbl">Código enviado</div><div class="tc" id="tc">—</div></div>
+      </div>
+      <div class="cnts">
+        <div class="cnt"><div class="cnum" id="ctot">0</div><div class="clbl">leituras</div></div>
+        <div class="cnt"><div class="cnum" id="cok">0</div><div class="clbl">enviados</div></div>
+      </div>
+      <button class="btn pri" id="btnc" onclick="toggle()">
+        <span id="bico">📷</span><span id="btxt">Iniciar câmera</span>
+      </button>
+      <button class="btn dng" onclick="clearAll()">🗑 Limpar histórico</button>
     </div>
-
-    <div class="zoom-row" id="zr">
-      <label>🔍 Zoom</label>
-      <input type="range" id="zs" min="1" max="5" step="0.1" value="1" oninput="doZoom(this.value)">
-      <span class="zv" id="zv">1×</span>
-    </div>
-
-    <div class="toast" id="toast">
-      <div class="ti" id="ti">✓</div>
-      <div><div class="tlbl" id="tlbl">Código enviado</div><div class="tcode" id="tc">—</div></div>
-    </div>
-
-    <div class="cnts">
-      <div class="cnt"><div class="cnum" id="ctot">0</div><div class="clbl">leituras</div></div>
-      <div class="cnt"><div class="cnum" id="cok">0</div><div class="clbl">enviados</div></div>
-    </div>
-
-    <button class="btn pri" id="btnc" onclick="toggle()">
-      <span id="bico">📷</span><span id="btxt">Iniciar câmera</span>
-    </button>
-    <button class="btn dng" onclick="clearAll()">🗑 Limpar histórico</button>
   </div>
 
   <div class="page" id="pc">
     <div class="card">
       <div class="ctitle">Conectar ao Google Sheets</div>
       <div class="srow"><div class="sbadge">1</div><div class="stxt">No Google Sheets, vá em <strong>Extensões → Apps Script</strong></div></div>
-      <div class="srow"><div class="sbadge">2</div><div class="stxt">Adicione a função abaixo no final do <strong>Código.gs</strong></div></div>
+      <div class="srow"><div class="sbadge">2</div><div class="stxt">Adicione no final do <strong>Código.gs</strong></div></div>
       <div class="cblk" id="scr">function doPost(e) {
   const sheet = SpreadsheetApp
     .getActiveSpreadsheet()
@@ -200,15 +188,14 @@
   </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jsqr/1.4.0/jsQR.min.js"></script>
+<!-- ZXing — supports QR Code, Data Matrix, Code128, EAN, and more -->
+<script src="https://cdn.jsdelivr.net/npm/@zxing/browser@0.1.1/umd/index.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@zxing/library@0.19.1/umd/index.min.js"></script>
 <script>
-/* ── state ── */
-let active=false, stream=null, raf=null, vtrack=null;
+let reader=null, active=false, vtrack=null;
 let log=[], tot=0, sent=0, lastCode='', lastT=0;
 const COOL=2500;
-const cv=document.createElement('canvas'), cx=cv.getContext('2d');
 
-/* ── tabs ── */
 function showTab(t){
   ['s','c','l'].forEach((id,i)=>{
     document.getElementById('p'+id).classList.toggle('on',id===t);
@@ -216,8 +203,6 @@ function showTab(t){
   });
   if(t==='l') renderLog();
 }
-
-/* ── config ── */
 const gurl=()=>localStorage.getItem('qr_url')||'';
 function upTop(){
   const ok=!!gurl();
@@ -226,67 +211,70 @@ function upTop(){
 }
 function saveConf(){
   localStorage.setItem('qr_url',document.getElementById('iurl').value.trim());
-  const m=document.getElementById('mok'); m.classList.add('on');
-  setTimeout(()=>m.classList.remove('on'),2500); upTop();
+  const m=document.getElementById('mok');m.classList.add('on');
+  setTimeout(()=>m.classList.remove('on'),2500);upTop();
 }
 function cpScript(btn){
   navigator.clipboard.writeText(document.getElementById('scr').textContent).catch(()=>{});
-  btn.textContent='✓ Copiado!';
-  setTimeout(()=>btn.textContent='📋 Copiar script',2000);
+  btn.textContent='✓ Copiado!';setTimeout(()=>btn.textContent='📋 Copiar script',2000);
 }
-
-/* ── zoom ── */
 function doZoom(v){
   document.getElementById('zv').textContent=parseFloat(v).toFixed(1)+'×';
-  if(!vtrack) return;
-  try{
-    const c=vtrack.getCapabilities();
-    if(c&&c.zoom){
-      const z=c.zoom.min+(c.zoom.max-c.zoom.min)*((v-1)/4);
-      vtrack.applyConstraints({advanced:[{zoom:z}]});
-    }
-  }catch(e){}
+  if(!vtrack)return;
+  try{const c=vtrack.getCapabilities();if(c&&c.zoom){const z=c.zoom.min+(c.zoom.max-c.zoom.min)*((v-1)/4);vtrack.applyConstraints({advanced:[{zoom:z}]});}}catch(e){}
 }
 
-/* ── camera ── */
 async function toggle(){
-  if(active){stop();return;}
+  if(active){stopScan();return;}
   const btn=document.getElementById('btnc');
   btn.disabled=true;
   document.getElementById('btxt').textContent='Abrindo...';
   try{
-    // Request camera — use environment facing, decent resolution
-    stream=await navigator.mediaDevices.getUserMedia({
-      video:{facingMode:{exact:'environment'},width:{ideal:1280},height:{ideal:1280}},
-      audio:false
-    }).catch(()=>navigator.mediaDevices.getUserMedia({
-      video:{facingMode:'environment',width:{ideal:1280},height:{ideal:1280}},
-      audio:false
-    }));
+    // ZXing BrowserMultiFormatReader supports QR, DataMatrix, Aztec, PDF417, barcodes
+    reader=new ZXingBrowser.BrowserMultiFormatReader(null,{
+      delayBetweenScanAttempts:150,
+      delayBetweenScanSuccess:2000
+    });
 
-    vtrack=stream.getVideoTracks()[0];
-
-    // autofocus + check zoom
-    try{
-      const caps=vtrack.getCapabilities();
-      const adv={};
-      if(caps.focusMode?.includes('continuous')) adv.focusMode='continuous';
-      if(Object.keys(adv).length) await vtrack.applyConstraints({advanced:[adv]});
-      if(caps.zoom) document.getElementById('zr').classList.add('on');
-    }catch(e){}
+    const devices=await ZXingBrowser.BrowserCodeReader.listVideoInputDevices();
+    // prefer back camera
+    const back=devices.find(d=>/(back|rear|environment|traseira)/i.test(d.label))||devices[devices.length-1];
+    const deviceId=back?back.deviceId:undefined;
 
     const vid=document.getElementById('vid');
-    vid.srcObject=stream;
-    await vid.play();
+    await reader.decodeFromVideoDevice(deviceId, vid, (result,err,controls)=>{
+      if(result){
+        const code=result.getText();
+        const now=Date.now();
+        if(code!==lastCode||now-lastT>COOL){
+          lastCode=code;lastT=now;
+          document.getElementById('fr').classList.add('hit');
+          setTimeout(()=>document.getElementById('fr').classList.remove('hit'),500);
+          onCode(code);
+        }
+      }
+    });
+
+    // get track for zoom
+    if(vid.srcObject){
+      vtrack=vid.srcObject.getVideoTracks()[0];
+      try{
+        const caps=vtrack.getCapabilities();
+        if(caps.zoom) document.getElementById('zr').classList.add('on');
+        const adv={};
+        if(caps.focusMode?.includes('continuous')) adv.focusMode='continuous';
+        if(Object.keys(adv).length) await vtrack.applyConstraints({advanced:[adv]});
+      }catch(e){}
+    }
 
     document.getElementById('idle').style.display='none';
     document.getElementById('ov').style.display='flex';
     active=true;
     document.getElementById('bico').textContent='⏹';
     document.getElementById('btxt').textContent='Parar câmera';
-    btn.className='btn'; btn.disabled=false;
-    tick();
+    btn.className='btn';btn.disabled=false;
   }catch(err){
+    console.error(err);
     btn.disabled=false;
     document.getElementById('btxt').textContent='Câmera negada — libere nas configurações';
     document.getElementById('bico').textContent='❌';
@@ -294,12 +282,10 @@ async function toggle(){
   }
 }
 
-function stop(){
+function stopScan(){
   active=false;
-  cancelAnimationFrame(raf);
-  if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;}
+  if(reader){try{reader.reset();}catch(e){} reader=null;}
   vtrack=null;
-  const vid=document.getElementById('vid'); vid.srcObject=null;
   document.getElementById('idle').style.display='flex';
   document.getElementById('ov').style.display='none';
   document.getElementById('zr').classList.remove('on');
@@ -308,62 +294,16 @@ function stop(){
   document.getElementById('btnc').className='btn pri';
 }
 
-/* ── scan loop — multiple strategies ── */
-function tick(){
-  if(!active){return;}
-  const vid=document.getElementById('vid');
-  if(vid.readyState===vid.HAVE_ENOUGH_DATA){
-    const W=vid.videoWidth, H=vid.videoHeight;
-    cv.width=W; cv.height=H;
-    cx.drawImage(vid,0,0);
-
-    let qr=null;
-
-    // Strategy 1: full frame
-    if(!qr) qr=jsQR(cx.getImageData(0,0,W,H).data,W,H,{inversionAttempts:'attemptBoth'});
-
-    // Strategy 2: center 70%
-    if(!qr){
-      const ox=Math.floor(W*.15),oy=Math.floor(H*.15),cw=Math.floor(W*.7),ch=Math.floor(H*.7);
-      qr=jsQR(cx.getImageData(ox,oy,cw,ch).data,cw,ch,{inversionAttempts:'attemptBoth'});
-    }
-
-    // Strategy 3: enhanced contrast — draw with high contrast filter then re-read
-    if(!qr){
-      cx.filter='contrast(2) brightness(1.1)';
-      cx.drawImage(vid,0,0);
-      cx.filter='none';
-      qr=jsQR(cx.getImageData(0,0,W,H).data,W,H,{inversionAttempts:'attemptBoth'});
-    }
-
-    const fr=document.getElementById('fr');
-    if(qr){
-      fr.classList.add('hit');
-      const now=Date.now();
-      if(qr.data!==lastCode||now-lastT>COOL){
-        lastCode=qr.data; lastT=now;
-        onCode(qr.data);
-      }
-    } else {
-      fr.classList.remove('hit');
-    }
-  }
-  raf=requestAnimationFrame(tick);
-}
-
-/* ── on code found ── */
 async function onCode(code){
-  tot++; document.getElementById('ctot').textContent=tot;
-  if(navigator.vibrate) navigator.vibrate(80);
-
-  const url=gurl(); let ok=false;
+  tot++;document.getElementById('ctot').textContent=tot;
+  if(navigator.vibrate)navigator.vibrate(80);
+  const url=gurl();let ok=false;
   if(url){
     try{
       await fetch(url,{method:'POST',body:JSON.stringify({code,ts:new Date().toISOString()}),headers:{'Content-Type':'application/json'}});
-      ok=true; sent++; document.getElementById('cok').textContent=sent;
+      ok=true;sent++;document.getElementById('cok').textContent=sent;
     }catch(e){}
   }
-
   const t=document.getElementById('toast');
   t.className='toast on'+(url&&!ok?' err':'');
   document.getElementById('ti').textContent=ok?'✓':(url?'✗':'📋');
@@ -382,7 +322,6 @@ function renderLog(){
       <span class="badge ${i.s?(i.ok?'bok':'berr'):'bloc'}">${i.s?(i.ok?'enviado':'erro'):'local'}</span>
     </div>`).join('');
 }
-
 function clearAll(){
   if(!confirm('Limpar histórico?'))return;
   log=[];tot=0;sent=0;
@@ -392,11 +331,18 @@ function clearAll(){
   renderLog();
 }
 
-/* ── init ── */
-window.addEventListener('load',()=>{
-  const u=gurl(); if(u) document.getElementById('iurl').value=u;
-  upTop();
-});
+// Wait for ZXing to load
+function waitLib(){
+  if(typeof ZXingBrowser!=='undefined'){
+    document.getElementById('libstat').style.display='none';
+    document.getElementById('scanui').style.display='block';
+    const u=gurl();if(u)document.getElementById('iurl').value=u;
+    upTop();
+  } else {
+    setTimeout(waitLib,300);
+  }
+}
+waitLib();
 </script>
 </body>
 </html>
